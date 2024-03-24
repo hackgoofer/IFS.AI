@@ -148,7 +148,8 @@ export default function Page({ searchParams }: { searchParams: { id: number } })
                       })
                       .catch((error) => {
                         console.error("Error:", error);
-                      });
+                      })
+                      .finally(() => setIsSubmitting(false));
                   }}
                 >
                   <SendIcon className="mr-2 h-4 w-4" />
