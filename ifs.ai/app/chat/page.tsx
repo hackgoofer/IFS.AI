@@ -6,6 +6,7 @@ import { MicIcon, SendIcon } from "lucide-react";
 import { useState } from "react";
 import { IMAGE_URLS_KEY, PartImageUrls } from "@/app/constants";
 import DIDVideoStream from "@/app/DIDWebRTCVideoStream";
+import Loading from "@/components/ui/loading"; // Import a LoadingScreen component
 
 export default function Page() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,9 +38,12 @@ export default function Page() {
         "https://media.discordapp.net/attachments/1221190777259167784/1221307109392519168/robert_manager.png?ex=661219e1&is=65ffa4e1&hm=0ac923036baf4bad33b5fd508c90e2ac60621bfec876ada9d325a084e4fc2b00&=&format=webp&quality=lossless&width=1557&height=1557",
     },
   ];
+
+
   return (
     <main className="flex min-h-svh flex-col px-24 py-10">
-      <p className="mb-10 text-3xl font-semibold">IFS Therapy</p>
+      {isSubmitting ? <Loading></Loading> : <div/>}
+      <p className="mb-10 text-3xl font-semibold">IFS Therapy</p> 
       <div className="flex w-full flex-grow basis-0 space-x-4">
         <div className="h-full w-4/5 flex-col">
           <div className="flex h-full flex-col justify-between">
