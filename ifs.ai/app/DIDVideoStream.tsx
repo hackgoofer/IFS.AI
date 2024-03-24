@@ -39,7 +39,7 @@ export default function DIDVideoStream({ avatarUrl, utterance }: { avatarUrl: st
       </div>
       <br />
       <div className="status">
-        Fetching: <label>{isFetching}</label>
+        Fetching: <label>{isFetching ? "true" : "false"}</label>
       </div>
     </div>
   );
