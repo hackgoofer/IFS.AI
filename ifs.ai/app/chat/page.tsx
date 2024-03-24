@@ -76,51 +76,53 @@ export default function Page() {
               ))}
             </div>
             <div className="mt-4 flex justify-end">
-              <form
-                className="flex w-full space-x-2"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setIsSubmitting(true);
-                  fetch('http://localhost:5000/get_response', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                      prev_part: prevPart, // replace with the previous part
-                      user_message: inputValue, // replace with the user's message
-                      history: [...history, {"role": "user", "text": inputValue, responder: ""}]
-                    })
-                  })
-                  .then(response => response.json())
-                  .then(data => {
-                    const { responder, text, role } = data;
-                    setHistory(prevHistory => [...prevHistory, {"role": "user", "text": inputValue, responder: ""}, {"role": role, "text": text, responder: responder}]);
-                    setPrevPart(responder);
-                    console.log(data);
-                  })
-                  .catch((error) => {
-                    console.error('Error:', error);
-                  });
-
-                  setInputValue("");
-
-                  // TODO: Actually call the prompt(s)
-                  console.log("Submitted", e);
-                  setTimeout(() => setIsSubmitting(false), 2000);
-                }}
-              >
+              <div className="flex w-full space-x-2 mr-2">
                 <Input
                   value={inputValue}
                   placeholder="What do you think?"
                   onChange={(e) => setInputValue(e.target.value)}
                 />
-                <Button type="submit" disabled={isSubmitting}>
+                <Button 
+                  type="button" 
+                  disabled={isSubmitting}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsSubmitting(true);
+                    fetch('http://localhost:5000/get_response', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({
+                        prev_part: prevPart, // replace with the previous part
+                        user_message: inputValue, // replace with the user's message
+                        history: [...history, {"role": "user", "text": inputValue, responder: ""}]
+                      })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                      const { responder, text, role } = data;
+                      setHistory(prevHistory => [...prevHistory, {"role": "user", "text": inputValue, responder: ""}, {"role": role, "text": text, responder: responder}]);
+                      setPrevPart(responder);
+                      setInputValue("");
+                      console.log(data);
+                    })
+                    .catch((error) => {
+                      console.error('Error:', error);
+                    });
+
+                    // TODO: Actually call the prompt(s)
+                    console.log("Submitted", e);
+                    setTimeout(() => {
+                      setIsSubmitting(false)
+                    }, 2000);
+                  }}
+                >
                   <SendIcon className="mr-2 h-4 w-4" />
                   Send
                 </Button>
-                <SpeechToText onTranscript={(transcript) => setInputValue(transcript)} />
-              </form>
+              </div>
+              <SpeechToText onTranscript={(transcript) => setInputValue(transcript)} />
             </div>
           </div>
         </div>
