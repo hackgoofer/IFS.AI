@@ -15,7 +15,7 @@ import 'react-chat-elements/dist/main.css'
 export default function Page() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [inputValue, setInputValue] = useState("");
-  const [history, setHistory] = useState<{role: string, text: string}[]>([]);
+  const [history, setHistory] = useState<{role: string, text: string, responder: string}[]>([]);
   const [prevPart, setPrevPart] = useState("none");
   
   const imageUrls: PartImageUrls = JSON.parse(window.localStorage.getItem(IMAGE_URLS_KEY) ?? "{}");
@@ -89,13 +89,13 @@ export default function Page() {
                     body: JSON.stringify({
                       prev_part: prevPart, // replace with the previous part
                       user_message: inputValue, // replace with the user's message
-                      history: [...history, {"role": "user", "text": inputValue}]
+                      history: [...history, {"role": "user", "text": inputValue, responder: ""}]
                     })
                   })
                   .then(response => response.json())
                   .then(data => {
                     const { responder, text, role } = data;
-                    setHistory(prevHistory => [...prevHistory, {"role": "user", "text": inputValue}, {"role": role, "text": responder + ": " + text}]);
+                    setHistory(prevHistory => [...prevHistory, {"role": "user", "text": inputValue, responder: ""}, {"role": role, "text": text, responder: responder}]);
                     setPrevPart(responder);
                     console.log(data);
                   })
@@ -126,19 +126,16 @@ export default function Page() {
         </div>
         <div ref={sidebarRef}  className="mx-2 w-2/5 rounded-lg border-2 border-stone-100 py-4 overflow-auto overflow-y-scroll max-h-full">
 
-        {history.map(({role, text}, index) => {
-          let bgColor, parsedRole = "User";
+        {history.map(({role, text, responder}, index) => {
+          let bgColor;
           if (role === "user") {
             bgColor = "white";
-          } else if (text.toLowerCase().startsWith("exile")) {
+          } else if (responder.toLowerCase() === "exile") {
             bgColor = "#FFFFE0";
-            parsedRole = "Exile";
-          } else if (text.toLowerCase().startsWith("firefighter")) {
+          } else if (responder.toLowerCase() == "firefighter") {
             bgColor = "#FFC0CB";
-            parsedRole = "Firefighter";
-          } else if (text.toLowerCase().startsWith("manager")) {
+          } else if (responder.toLowerCase() == "manager") {
             bgColor = "#ADD8E6";
-            parsedRole = "Manager";
           } else {
             bgColor = "#000000";
           }
@@ -147,7 +144,7 @@ export default function Page() {
               <MessageBox
                 key={text}
                 id={index.toString()}
-                title={parsedRole}
+                title={responder}
                 titleColor={bgColor} // Add this line
                 position={role === "user" ? "right" : "left"}
                 type={"text"}
