@@ -67,6 +67,7 @@ export default function Page() {
               <form
                 className="flex w-full space-x-2"
                 onSubmit={(e) => {
+                  document.querySelector("#log").innerHTML += '<div style="text-align: right;"><span>me: ' + inputValue + '</span></div>';
                   e.preventDefault();
                   setIsSubmitting(true);
                   fetch('http://localhost:5000/get_response', {
@@ -86,6 +87,7 @@ export default function Page() {
                     setHistory(prevHistory => [...prevHistory, {"role": "user", "text": inputValue}, {"role": role, "text": responder + ": " + text}]);
                     setPrevPart(responder);
                     console.log(data);
+                    document.querySelector("#log").innerHTML += '<div style="text-align: left;"><span>' + responder + ': ' + text + '</span></div>';
                   })
                   .catch((error) => {
                     console.error('Error:', error);
@@ -114,7 +116,9 @@ export default function Page() {
             </div>
           </div>
         </div>
-        <div className="mx-2 w-1/5 rounded-lg border-2 border-stone-100 py-4">Sidebar</div>
+        <div className="mx-2 w-1/5 rounded-lg border-2 border-stone-100 py-4">Sidebar
+          <div id="log"></div>
+        </div>
       </div>
     </main>
   );
