@@ -2,11 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import Webcam from "react-webcam";
-import { MutableRefObject, useMemo, useRef, useState } from "react";
+import { MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { generateReactHelpers } from "@uploadthing/react";
 import { OurFileRouter } from "@/app/api/uploadthing/core";
-import { getImageUrlsKeyForId } from "@/app/constants";
+import { getImageUrlsKeyForId, getRantKeyForId, PartImageUrls } from "@/app/constants";
+import SpeechToText from "@/components/ui/speech-to-text";
 
 const { useUploadThing, uploadFiles } = generateReactHelpers<OurFileRouter>();
 
@@ -26,6 +27,9 @@ function dataURLtoFile(dataurl: string, filename: string) {
 export default function Page() {
   const webcamRef: MutableRefObject<Webcam | null> = useRef(null);
   const [rantProcessed, setRantProcessed] = useState(false);
+  const [rant, setRant] = useState("");
+  const [imagesCaptured, setImagesCaptured] = useState(false);
+  const [imageUrls, setImageUrls] = useState<PartImageUrls | {}>({});
 
   const id = useMemo(() => {
     let i = 0;
@@ -36,37 +40,45 @@ export default function Page() {
     return i;
   }, []);
 
+  useEffect(() => {
+    if (rantProcessed && imageUrls.firefighter) {
+      console.log("Rant process and images generated", imageUrls);
+      window.location.href = `/chat?id=${id}`;
+    }
+  }, [rantProcessed, imageUrls, id]);
+
   const { startUpload, permittedFileInfo, isUploading } = useUploadThing("imageUploader", {
     onClientUploadComplete: (res) => {
       console.log("Res", res);
       let imageUrls = res[0].serverData.partImageUrls;
       console.log("Saving image urls", imageUrls);
+      setImageUrls({ ...imageUrls });
       window.localStorage.setItem(getImageUrlsKeyForId(id), JSON.stringify(imageUrls));
-      toast({
-        title: "Uploaded successfully!",
-        description: (
-          <div>
-            <a href={res[0].url} target="_blank">
-              <img src={res[0].url} alt="Uploaded image" />
-            </a>
-            <a href={imageUrls.exile} target="_blank">
-              <img src={imageUrls.exile} alt="Uploaded image" />
-            </a>
-            <a href={imageUrls.manager} target="_blank">
-              <img src={imageUrls.manager} alt="Uploaded image" />
-            </a>
-            <a href={imageUrls.firefighter} target="_blank">
-              <img src={imageUrls.firefighter} alt="Uploaded image" />
-            </a>
-          </div>
-        ),
-      });
+      // toast({
+      //   title: "Uploaded successfully!",
+      //   description: (
+      //     <div>
+      //       <a href={res[0].url} target="_blank">
+      //         <img src={res[0].url} alt="Uploaded image" />
+      //       </a>
+      //       <a href={imageUrls.exile} target="_blank">
+      //         <img src={imageUrls.exile} alt="Uploaded image" />
+      //       </a>
+      //       <a href={imageUrls.manager} target="_blank">
+      //         <img src={imageUrls.manager} alt="Uploaded image" />
+      //       </a>
+      //       <a href={imageUrls.firefighter} target="_blank">
+      //         <img src={imageUrls.firefighter} alt="Uploaded image" />
+      //       </a>
+      //     </div>
+      //   ),
+      // });
     },
     onUploadError: () => {
       toast({ title: "Error occurred while uploading", variant: "destructive" });
     },
     onUploadBegin: () => {
-      toast({ title: "Upload has begun" });
+      // toast({ title: "Upload has begun" });
     },
   });
 
@@ -77,17 +89,19 @@ export default function Page() {
           <p className="text-3xl font-semibold">IFS</p>
           <p className="text-stone-400">Connect with your inner selves.</p>
         </div>
-        <Webcam
-          ref={webcamRef}
-          audio={false}
-          height={720}
-          screenshotFormat="image/jpeg"
-          width={1280}
-          className="rounded-xl"
-          videoConstraints={{ width: 800, height: 800, facingMode: "user" }}
-        />
+        {!imagesCaptured && (
+          <Webcam
+            ref={webcamRef}
+            audio={false}
+            height={800}
+            screenshotFormat="image/jpeg"
+            width={800}
+            className="rounded-xl"
+            videoConstraints={{ width: 800, height: 800, facingMode: "user" }}
+          />
+        )}
         <Button
-          disabled={isUploading}
+          disabled={imagesCaptured}
           onClick={() => {
             if (!webcamRef.current) {
               toast({ title: "Not ready", description: "Please grant permissions and wait" });
@@ -96,17 +110,34 @@ export default function Page() {
               if (!ss) {
                 toast({ title: "Couldn't capture image", variant: "destructive" });
               } else {
-                toast({
-                  title: "Captured",
-                  description: <img src={ss} alt="The captured selfie image from the webcam" />,
-                });
+                // toast({
+                //   title: "Captured",
+                //   description: <img src={ss} alt="The captured selfie image from the webcam" />,
+                // });
                 startUpload([dataURLtoFile(ss, "selfie.jpg")]);
+                setImagesCaptured(true);
               }
             }
           }}
         >
-          {isUploading ? "Looking inside you..." : "Start 🤳"}
+          {imagesCaptured ? "Looking inside you..." : "Start 🤳"}
         </Button>
+        {(true || (imagesCaptured && !rantProcessed)) && (
+          <div className="flex w-full max-w-xl flex-col items-center space-y-4">
+            <div>
+              <p>Now tell me about your problems...</p>
+            </div>
+            <SpeechToText
+              onTranscript={(transcript) => setRant(transcript)}
+              onEnd={() => {
+                window.localStorage.setItem(getRantKeyForId(id), rant);
+                setRantProcessed(true);
+              }}
+            />
+            <div className="italic text-stone-400">{rant}</div>
+            {imageUrls.firefighter && <p className="text-xs text-stone-400">Images generated</p>}
+          </div>
+        )}
       </div>
     </main>
   );
