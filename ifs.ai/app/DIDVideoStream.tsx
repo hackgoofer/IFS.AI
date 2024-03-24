@@ -30,6 +30,7 @@ export default function DIDVideoStream({ avatarUrl }: { avatarUrl: string }) {
       setStreamingStatusLabel,
     });
     setStreamingClient(client);
+    client.connect();
   }, [avatarUrl, videoElementRef]);
 
   return (
