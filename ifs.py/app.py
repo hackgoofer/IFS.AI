@@ -54,7 +54,7 @@ def get_response():
     ]
 
     response = client.chat.completions.create(
-        model="gpt-4-1106-preview",
+        model="gpt-4",
         messages=messages,
         max_tokens=300,
     )
@@ -88,6 +88,7 @@ def get_response():
         text = message.get('text')
         messages.append(ChatMessage(role=role, content=text))
     
+    print(history)
     chat_response = mistral_client.chat(
         model=mistral_model,
         messages=messages,

@@ -11,6 +11,7 @@ export default function Page() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [history, setHistory] = useState<{role: string, text: string}[]>([]);
+  const [prevPart, setPrevPart] = useState("none");
   
   const imageUrls: PartImageUrls = JSON.parse(window.localStorage.getItem(IMAGE_URLS_KEY) ?? "{}");
   const parts = [
@@ -63,15 +64,16 @@ export default function Page() {
                       'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                      prev_part: 'none', // replace with the previous part
+                      prev_part: prevPart, // replace with the previous part
                       user_message: inputValue, // replace with the user's message
-                      history: history
+                      history: [...history, {"role": "user", "text": inputValue}]
                     })
                   })
                   .then(response => response.json())
                   .then(data => {
                     const { responder, text, role } = data;
-                    setHistory(prevHistory => [...prevHistory, {"role": role, "text": responder + ": " + text}]);
+                    setHistory(prevHistory => [...prevHistory, {"role": "user", "text": inputValue}, {"role": role, "text": responder + ": " + text}]);
+                    setPrevPart(responder);
                     console.log(data);
                   })
                   .catch((error) => {
