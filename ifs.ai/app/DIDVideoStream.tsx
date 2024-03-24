@@ -1,50 +1,31 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
 
 const URL = "http://localhost:5000";
 
-/**
- * DIDVideoStream component
- * This component handles video streaming using a direct URL.
- * It fetches a video from a specified URL and displays it in a video element.
- *
- * Props:
- * - avatarUrl: string - The URL of the avatar image to be displayed as a poster.
- * - utterance: string - The text utterance to be sent to the server for generating the video.
- */
 export default function DIDVideoStream({ avatarUrl, utterance }: { avatarUrl: string; utterance: string }) {
   const videoElement = useRef<HTMLVideoElement>(null);
   const [isFetching, setIsFetching] = useState(false);
-
+  // call client.say when utterance changes or when peer connection is 'connected'
   useEffect(() => {
+    console.log("utterance or avatars changed");
     const doSay = async () => {
-      try {
-        setIsFetching(true);
-
-        const response = await fetch(`${URL}/create_talk`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ image_url: avatarUrl, text: utterance }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.text();
-        console.log("Setting video src to", data);
-        videoElement?.current?.setAttribute("src", data);
-      } catch (error) {
-        console.error("Error fetching video:", error);
-        // Display an error message to the user or handle the error gracefully
-      } finally {
-        setIsFetching(false);
-      }
+      console.log("utterance or avatars changed");
+      setIsFetching(true);
+      // POST image_url and text to URL
+      const result = await fetch(`${URL}/create_talk`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ image_url: avatarUrl, text: utterance }),
+      });
+      setIsFetching(false);
+      const data = await result;
+      const text = await data.text();
+      console.log("setting video src to", text);
+      videoElement?.current?.setAttribute("src", text);
     };
-
     doSay();
   }, [utterance, avatarUrl]);
 
