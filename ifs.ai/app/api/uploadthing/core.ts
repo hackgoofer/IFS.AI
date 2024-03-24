@@ -14,11 +14,11 @@ const replicate = new Replicate({
 async function makePartImages(inputUrl: string): Promise<PartImageUrls> {
   const prompts = {
     manager:
-      "A photo of man img upclose, facing camera, looking confident and controlled, professional outfit, upright posture, orderly surroundings, muted background colors, symbols of achievement, sense of discipline and responsibility",
+      "A photo of a person img upclose, facing camera, looking mature confident and controlled, professional outfit, upright posture, orderly surroundings, muted background colors, symbols of achievement, sense of discipline and responsibility",
     firefighter:
-      "A photo of man img upclose, facing camera, fierce expression, intense eyes, bold outfit, fiery background colors, sense of urgency and strength",
+      "A photo of a person img upclose, facing camera, fierce expression, intense eyes, firefighter, bold outfit, fiery background colors, sense of urgency and strength",
     exile:
-      "A photo of man img upclose, facing camera, young and vulnerable, sad eyes, child-like clothing, sitting alone, muted background colors, sense of isolation and longing for care and acceptance",
+      "A photo of a child img upclose, facing camera, young and extremely vulnerable, infant, eyes filled with fear and uncertainty, tattered and worn clothing, dark and shadowy background colors, bruises and scratches visible on skin, sense of deep isolation, desperately seeking safety, care, and acceptance",
   };
 
   return Object.fromEntries(
