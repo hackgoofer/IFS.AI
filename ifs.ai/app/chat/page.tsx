@@ -61,6 +61,21 @@ export default function Page({ searchParams }: { searchParams: { id: number } })
       sidebarRef.current.scrollTop = sidebarRef.current.scrollHeight;
     }
   });
+  
+  const createVideo = async (imageUrl: string, text: string) => {
+    const response = await fetch('http://localhost:5000/create_talk', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        image_url: imageUrl,
+        text: text
+      })
+    });
+    const data = await response.json();
+    return data;
+  }
 
   return (
     <main className="flex min-h-svh flex-col px-4 py-10">
@@ -118,6 +133,16 @@ export default function Page({ searchParams }: { searchParams: { id: number } })
                         setPrevPart(responder);
                         setInputValue("");
                         console.log(data);
+                        
+                        const part = parts.find(part => part.name.toLowerCase() === responder.toLowerCase());
+                        if (part) {
+                          console.log("using image")
+                          console.log(part.imageUrl)
+                          // TODO: CAN SOMEOONE LOOK INTO HOW TO DISPLAY IT ON PAGE? SHOULD WE USE THE DIDVideoStream?
+                          console.log(createVideo(part.imageUrl, text));
+                        } else {
+                          console.error('Part not found for responder:', responder);
+                        }
                       })
                       .catch((error) => {
                         console.error("Error:", error);

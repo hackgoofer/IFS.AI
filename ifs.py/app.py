@@ -14,6 +14,7 @@ import instructor
 load_dotenv()
 
 groq = os.getenv("GROQ_ENV")
+openai_client = OpenAI()
 instructor_client = instructor.patch(
     OpenAI(
         # This is the default and can be omitted
@@ -34,7 +35,7 @@ CORS(app, resources={r'/*': {'origins': '*'}})
 D_ID_API_KEY = os.getenv("D_ID_API_KEY")
 if D_ID_API_KEY is None:
     raise Exception("D_ID_API_KEY not found in environment")
-auth = "Bearer " + D_ID_API_KEY
+auth = "Basic " + D_ID_API_KEY
 
 
 # To test this:
@@ -107,7 +108,7 @@ def get_response():
         },
     ]
 
-    response = openapi_client.chat.completions.create(
+    response = openai_client.chat.completions.create(
         model="gpt-4",
         messages=messages,
         max_tokens=300,
@@ -124,7 +125,7 @@ def get_response():
         responder = "exile"
         system = exile_system        
 
-    system += f" Reply with less than three sentences in first person as a {responder}"
+    system += f" Reply with less than 2 sentences in first person as a {responder}"
     messages = [
         ChatMessage(role="system", content=system),
     ]
@@ -172,10 +173,13 @@ def get_talk(talk_id):
 
 @app.route('/create_talk', methods=['POST'])
 def create_talk():
+
     url = "https://api.d-id.com/talks"
 
     # parse body as json:
     request_payload = request.get_json()
+    text = request_payload.get('text')
+    image_url = request_payload.get('image_url')
 
     print("rpayload:", request_payload)
     payload = {
@@ -186,13 +190,13 @@ def create_talk():
                 "type": "microsoft",
                 "voice_id": "en-US-JennyNeural"
             },
-            "input": request_payload.get('text'),
+            "input": text,
         },
         "config": {
             "fluent": "false",
             "pad_audio": "0.0"
         },
-        "source_url": request_payload.get('image_url'),
+        "source_url": image_url,
     }
     headers = {
         "accept": "application/json",
@@ -203,10 +207,14 @@ def create_talk():
     response = requests.post(url, json=payload, headers=headers)
 
     print(response.text)
-    talk_id = json.loads(response.text)['id']
+    response_json = json.loads(response.text)
+    if "id" in response_json:
+        talk_id = response_json['id']
 
-    while talk_ready(talk_id) == False:
-        time.sleep(1)
+        while talk_ready(talk_id) == False:
+            time.sleep(1)
 
-    return get_talk(talk_id)
+        return get_talk(talk_id)
+    else:
+        return "Error creating talk. ID not found in response JSON"
 
