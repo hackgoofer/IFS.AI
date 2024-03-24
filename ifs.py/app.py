@@ -9,8 +9,8 @@ from openai import OpenAI
 
 load_dotenv()
 
-grok = os.getenv("GROK_ENV")
-client = OpenAI()
+groq = os.getenv("GROQ_ENV")
+openapi_client = OpenAI()
 mistral_model = "mistral-large-latest"
 mistral_client = MistralClient(api_key=os.getenv("MISTRAL_API_KEY"))
 
@@ -23,7 +23,10 @@ app = Flask(__name__)
 # Enable CORS
 CORS(app, resources={r'/*': {'origins': '*'}})
 
-auth = "Bearer " + os.getenv("D_ID_API_KEY")
+D_ID_API_KEY = os.getenv("D_ID_API_KEY")
+if D_ID_API_KEY is None:
+    raise Exception("D_ID_API_KEY not found in environment")
+auth = "Bearer " + D_ID_API_KEY
 
 @app.route('/get_response', methods=['POST'])
 def get_response():
@@ -53,7 +56,7 @@ def get_response():
         },
     ]
 
-    response = client.chat.completions.create(
+    response = openapi_client.chat.completions.create(
         model="gpt-4",
         messages=messages,
         max_tokens=300,
