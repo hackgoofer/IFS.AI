@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
 from openai import OpenAI
+from pydantic import BaseModel, Field, validator
+import instructor
+from parts import IFSParts
 
 load_dotenv()
 
@@ -13,7 +16,12 @@ groq = os.getenv("GROQ_ENV")
 openapi_client = OpenAI()
 mistral_model = "mistral-large-latest"
 mistral_client = MistralClient(api_key=os.getenv("MISTRAL_API_KEY"))
-
+instructor_client = instructor.patch(
+    OpenAI(
+        # This is the default and can be omitted
+        api_key=os.getenv("OPENAI_API_KEY"),
+    )
+)
 # flask cors:
 from flask_cors import CORS
 
@@ -28,12 +36,50 @@ if D_ID_API_KEY is None:
     raise Exception("D_ID_API_KEY not found in environment")
 auth = "Bearer " + D_ID_API_KEY
 
+@app.route('/get_system_prompts', methods=['POST'])
+def get_system_prompts():
+    data = request.get_json()
+    user_message = data.get('user_message')
+
+    system_prompt = f"""
+Extract the user message {user_message} into a list of IFS parts: Firefighter, Manager and Exile. Use first person to describe the different parts' personality, talk about their feelings including their shames and fear and unmet needs.
+
+Managers: Parts that try to keep the person safe and in control by managing their interactions and experiences.
+Exiles: Vulnerable parts that carry pain, trauma, and intense emotions, often pushed away or suppressed by other parts.
+Firefighters: Parts that act out to distract or numb the pain of the exiles, often through impulsive or destructive behaviors.
+"""
+
+    retry_count = 0
+    while retry_count < 3:
+        try:
+            result = instructor_client.chat.completions.create(
+                model="gpt-4",
+                response_model=IFSParts,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_message},
+                ]
+            )
+            print(result)
+            return result.json()
+        except Exception as e:
+            print(f"Attempt {retry_count+1} failed with error: {e}")
+            retry_count += 1
+            time.sleep(1)  # wait for a second before retrying
+
 @app.route('/get_response', methods=['POST'])
 def get_response():
     data = request.get_json()
     prev_part = data.get('prev_part')
     history = data.get('history')
     user_message = data.get('user_message')
+    exile_system_default = "I respond as an Exile, I carry the deep questions and doubts about whether we're on the right path, questioning our pursuit of wealth and status. To the Manager, I might seem like a source of vulnerability or weakness, bringing up uncertainties and existential worries that challenge our direction. My relationship with the Firefighter is more synergistic; we both yearn for something beyond material success - a sense of purpose, happiness, and genuine connection. I feel somewhat protected by The Manager, who tries to keep these painful doubts at bay, but I also long for my voice to be heard and my concerns to be addressed, believing that our true path lies in answering these deeper questions. I am young and unsure. I need to tell the user about my unmet needs and work with them to come up with actionable items to help them feel better. Reply as an exile, reply with just text and talk about an exile's feelings a lot."
+    manager_system_default = "As a Manager, I am always pushing for success. I feel like I'm constantly on the lookout, trying to protect us from feeling inadequate or not good enough. I set high goals and standards, like becoming a billionaire, because I believe that's what we need to feel secure and valued. However, I realize that in my efforts to manage our self-esteem and future, I sometimes overlook the deeper questions and needs that the Exile and the Firefighter bring up. I see them as vulnerabilities that might slow us down or divert us from our path. I am logical and mature. I need to tell the user about my unmet needs and work with them to come up with actionable items to help them feel better. Reply as a manager, reply with just text and talk about a manager's feelings a lot."
+    firefighter_system_default = "As a firefighter, I respond to the pain and vulnerability the Manager and the Exile bring to the surface. When the weight of our ambitions or the depth of our questions become too much, I step in, seeking love and validation to soothe our shared fears and discomfort. I act to distract or shield us from the pain of not meeting the Manager's high standards or the Exile's existential worries, believing that love and acceptance might fill the voids they expose."
+    
+    firefighter_system = data.get('firefighter_system', firefighter_system_default)
+    manager_system = data.get('manager_system', manager_system_default)
+    exile_system = data.get('exile_system', exile_system_default)
 
     messages = [
         {
@@ -65,24 +111,15 @@ def get_response():
     responder = None
     if "firefighter" in reply:
         responder = "firefighter"
+        system = firefighter_system
     elif "manager" in reply:
         responder = "manager"
+        system = manager_system
     elif "exile" in reply:
         responder = "exile"
+        system = exile_system        
 
-    # expects responder: exile|manager|firefighter
-    # expects history: list of tuples (role, text)
-    exile_system = "I respond as an Exile, I carry the deep questions and doubts about whether we're on the right path, questioning our pursuit of wealth and status. To the Manager, I might seem like a source of vulnerability or weakness, bringing up uncertainties and existential worries that challenge our direction. My relationship with the Firefighter is more synergistic; we both yearn for something beyond material success - a sense of purpose, happiness, and genuine connection. I feel somewhat protected by The Manager, who tries to keep these painful doubts at bay, but I also long for my voice to be heard and my concerns to be addressed, believing that our true path lies in answering these deeper questions. I am young and unsure. I need to tell the user about my unmet needs and work with them to come up with actionable items to help them feel better. Reply as an exile, reply with just text and talk about an exile's feelings a lot."
-    manager_system = "As a Manager, I am always pushing for success. I feel like I'm constantly on the lookout, trying to protect us from feeling inadequate or not good enough. I set high goals and standards, like becoming a billionaire, because I believe that's what we need to feel secure and valued. However, I realize that in my efforts to manage our self-esteem and future, I sometimes overlook the deeper questions and needs that the Exile and the Firefighter bring up. I see them as vulnerabilities that might slow us down or divert us from our path. I am logical and mature. I need to tell the user about my unmet needs and work with them to come up with actionable items to help them feel better. Reply as a manager, reply with just text and talk about a manager's feelings a lot."
-    firefighter_system = "As a firefighter, I often find myself in the middle of the Manager's ambitions and the Exile's doubts. I understand the Manager's drive and the protection it offers against feeling inadequate, but I also share the Exile's longing for deeper meaning and fulfillment in life. My role feels like a response to the pain and vulnerability both of these parts bring to the surface. When the weight of our ambitions or the depth of our questions become too much, I step in, seeking love and validation to soothe our shared fears and discomfort. I act to distract or shield us from the pain of not meeting the Manager's high standards or the Exile's existential worries, believing that love and acceptance might fill the voids they expose."
-    if responder == "exile":
-        system = exile_system
-    elif responder == "manager":
-        system = manager_system
-    elif responder == "firefighter":
-        system = firefighter_system
-
-    system += " Reply with less than three sentences."
+    system += f" Reply with less than three sentences in first person as a {responder}"
     messages = [
         ChatMessage(role="system", content=system),
     ]
@@ -91,7 +128,6 @@ def get_response():
         text = message.get('text')
         messages.append(ChatMessage(role=role, content=text))
     
-    print(history)
     chat_response = mistral_client.chat(
         model=mistral_model,
         messages=messages,
