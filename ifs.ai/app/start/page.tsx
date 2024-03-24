@@ -6,6 +6,7 @@ import { MutableRefObject, useRef } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { generateReactHelpers } from "@uploadthing/react";
 import { OurFileRouter } from "@/app/api/uploadthing/core";
+import { IMAGE_URLS_KEY } from "@/app/constants";
 
 const { useUploadThing, uploadFiles } = generateReactHelpers<OurFileRouter>();
 
@@ -27,6 +28,9 @@ export default function Page() {
   const { startUpload, permittedFileInfo } = useUploadThing("imageUploader", {
     onClientUploadComplete: (res) => {
       console.log("Res", res);
+      let imageUrls = res[0].serverData.partImageUrls;
+      console.log("Saving image urls", imageUrls);
+      window.localStorage.setItem(IMAGE_URLS_KEY, JSON.stringify(imageUrls));
       toast({
         title: "Uploaded successfully!",
         description: (
@@ -34,14 +38,14 @@ export default function Page() {
             <a href={res[0].url} target="_blank">
               <img src={res[0].url} alt="Uploaded image" />
             </a>
-            <a href={res[0].serverData.partImageUrls.exile} target="_blank">
-              <img src={res[0].serverData.partImageUrls.exile} alt="Uploaded image" />
+            <a href={imageUrls.exile} target="_blank">
+              <img src={imageUrls.exile} alt="Uploaded image" />
             </a>
-            <a href={res[0].serverData.partImageUrls.manager} target="_blank">
-              <img src={res[0].serverData.partImageUrls.manager} alt="Uploaded image" />
+            <a href={imageUrls.manager} target="_blank">
+              <img src={imageUrls.manager} alt="Uploaded image" />
             </a>
-            <a href={res[0].serverData.partImageUrls.firefighter} target="_blank">
-              <img src={res[0].serverData.partImageUrls.firefighter} alt="Uploaded image" />
+            <a href={imageUrls.firefighter} target="_blank">
+              <img src={imageUrls.firefighter} alt="Uploaded image" />
             </a>
           </div>
         ),

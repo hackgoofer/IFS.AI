@@ -1,6 +1,7 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 import Replicate from "replicate";
+import { PartImageUrls } from "@/app/constants";
 
 const f = createUploadthing();
 
@@ -10,7 +11,7 @@ const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
 });
 
-async function makePartImages(inputUrl: string): Promise<{ manager: string; firefighter: string; exile: string }> {
+async function makePartImages(inputUrl: string): Promise<PartImageUrls> {
   const prompts = {
     manager:
       "A photo of man img upclose, facing camera, looking confident and controlled, professional outfit, upright posture, orderly surroundings, muted background colors, symbols of achievement, sense of discipline and responsibility",
