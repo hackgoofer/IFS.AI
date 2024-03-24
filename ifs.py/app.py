@@ -42,12 +42,14 @@ def get_system_prompts():
     user_message = data.get('user_message')
 
     system_prompt = f"""
-Extract the user message {user_message} into a list of IFS parts: Firefighter, Manager and Exile. Use first person to describe the different parts' personality, talk about their feelings including their shames and fear and unmet needs.
+Take the user message {user_message}, and create a list of IFS parts: Firefighter, Manager and Exile. Use first person to describe the different parts' personality, talk about their feelings including their shames and fear and unmet needs. Use details provided by the user.
 
-Managers: Parts that try to keep the person safe and in control by managing their interactions and experiences.
-Exiles: Vulnerable parts that carry pain, trauma, and intense emotions, often pushed away or suppressed by other parts.
-Firefighters: Parts that act out to distract or numb the pain of the exiles, often through impulsive or destructive behaviors.
+Managers: Parts that try to keep the person safe and in control by managing their interactions and experiences. In personalities, describe how I keep the person safe and in control.
+Exiles: Vulnerable parts that carry pain, trauma, and intense emotions, often pushed away or suppressed by other parts. In personalities, describe the pain, trauma and intense emotions I have.
+Firefighters: Parts that act out to distract or numb the pain of the exiles, often through impulsive or destructive behaviors. In personalities, describe how I act out to distract or numb the pain of the exiles.
 """
+# example: 
+# parts=[IFSPart(name=<PartName.MANAGER: 'Manager'>, personality="As a Manager in this situation, I feel a sense of duty and responsibility. I am constantly questioning if we're doing the right thing and whether our venture will yield the desired results in a short span. The need for surety causes additional stress and anxiety, driving me to closely scrutinize and control every aspect of our plan. My unmet needs revolve around certainty, success, and validation.", unmet_needs=['certainty', 'success', 'validation']), IFSPart(name=<PartName.EXILE: 'Exile'>, personality='As an Exile, I carry the heavy burdens of self-doubt and feelings of inadequacy. I question if this is the life I truly want and if these achievements will bring me happiness. My inner turbulence intensifies when thinking about love and why it seems elusive to me. I am the receptacle of unvoiced sadness and yearning, often suppressed to maintain an outward impression of confidence. The love I seek remains a poignant reminder of unmet needs for companionship, contentment, and self-acceptance.', unmet_needs=['companionship', 'contentment', 'self-acceptance']), IFSPart(name=<PartName.FIREFIGHTER: 'Firefighter'>, personality="As a Firefighter, I react to these feelings of insecurity and uncertainty by pushing towards ambitious goals like becoming a billionaire in 12 months. My approach can be seen as impulsive or even reckless, as it's driven more by a need to numb the deep-seated feelings of inadequacy than by a solid plan. This relentless drive serves to distract from the lingering questions about what truly brings happiness and fulfillment. My unmet needs are focused on fulfillment, validation, and a sense of worth.", unmet_needs=['fulfillment', 'validation', 'sense of worth'])]
 
     retry_count = 0
     while retry_count < 3:
