@@ -91,7 +91,9 @@ export default function Page({ searchParams }: { searchParams: { id: number } })
                   <div className="px-2">
                     <p className="my-2 text-center text-lg font-semibold">{prettyName}</p>
                     <p className="my-2 text-sm">{personality}</p>
-                    <p className="my-2 text-sm">Unmet Needs: {unmetNeeds.join(", ")}</p>
+                    <p className="my-2 text-sm">
+                      <strong>Unmet needs:</strong> {unmetNeeds.join(", ")}
+                    </p>
                   </div>
                 </div>
               ))}
