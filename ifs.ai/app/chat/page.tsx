@@ -2,10 +2,9 @@
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { MicIcon, SendIcon } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { SendIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { getImageUrlsKeyForId, PartImageUrls } from "@/app/constants";
-import DIDVideoStream from "@/app/DIDWebRTCVideoStream";
 import Loading from "@/components/ui/loading"; // Import a LoadingScreen component
 import SpeechToText from "@/components/ui/speech-to-text";
 import { MessageBox } from "react-chat-elements";
@@ -17,6 +16,7 @@ export default function Page({ searchParams }: { searchParams: { id: number } })
   const [inputValue, setInputValue] = useState("");
   const [history, setHistory] = useState<{ role: string; text: string; responder: string }[]>([]);
   const [prevPart, setPrevPart] = useState("none");
+  const [videoUrls, setVideoUrls] = useState<{ [key: string]: string }>({});
 
   const imageUrls: PartImageUrls = JSON.parse(
     window.localStorage.getItem(getImageUrlsKeyForId(searchParams.id)) ?? "{}",
@@ -73,9 +73,12 @@ export default function Page({ searchParams }: { searchParams: { id: number } })
         text: text,
       }),
     });
-    const data = await response.json();
-    return data;
+    const videoUrl = await response.text();
+    console.log("Got video URL", videoUrl);
+    return videoUrl;
   };
+
+  console.log("Video URLs", videoUrls);
 
   return (
     <main className="flex min-h-svh flex-col px-4 py-10">
@@ -87,7 +90,7 @@ export default function Page({ searchParams }: { searchParams: { id: number } })
             <div className="flex flex-grow basis-0 flex-row space-x-2">
               {parts.map(({ name, prettyName, imageUrl, personality, unmetNeeds }) => (
                 <div key={name} className="flex-1 overflow-hidden rounded-lg border-2 border-stone-100">
-                  <img className="rounded-lg" src={imageUrl} alt={`An image of you as a ${name}`} />
+                  <video className="rounded-lg" src={videoUrls[name.toLowerCase()]} poster={imageUrl} autoPlay={true} />
                   <div className="px-2">
                     <p className="my-2 text-center text-lg font-semibold">{prettyName}</p>
                     <p className="my-2 text-sm italic text-stone-400">{personality}</p>
@@ -142,8 +145,7 @@ export default function Page({ searchParams }: { searchParams: { id: number } })
                         if (part) {
                           console.log("using image");
                           console.log(part.imageUrl);
-                          // TODO: CAN SOMEOONE LOOK INTO HOW TO DISPLAY IT ON PAGE? SHOULD WE USE THE DIDVideoStream?
-                          console.log(createVideo(part.imageUrl, text));
+                          createVideo(part.imageUrl, text).then((videoUrl) => setVideoUrls({ [responder]: videoUrl }));
                         } else {
                           console.error("Part not found for responder:", responder);
                         }
@@ -180,7 +182,7 @@ export default function Page({ searchParams }: { searchParams: { id: number } })
               bgColor = "#000000";
             }
             return (
-              <div style={{ backgroundColor: bgColor, borderRadius: "10px", fontSize: 10 }}>
+              <div style={{ backgroundColor: bgColor, borderRadius: "10px", fontSize: 10 }} key={index}>
                 <MessageBox
                   key={text}
                   id={index.toString()}
