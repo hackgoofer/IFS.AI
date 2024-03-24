@@ -30,9 +30,20 @@ export default function Page() {
       toast({
         title: "Uploaded successfully!",
         description: (
-          <a href={res[0].url} target="_blank">
-            <img src={res[0].url} alt="Uploaded image" />
-          </a>
+          <div>
+            <a href={res[0].url} target="_blank">
+              <img src={res[0].url} alt="Uploaded image" />
+            </a>
+            <a href={res[0].serverData.partImageUrls.exile} target="_blank">
+              <img src={res[0].serverData.partImageUrls.exile} alt="Uploaded image" />
+            </a>
+            <a href={res[0].serverData.partImageUrls.manager} target="_blank">
+              <img src={res[0].serverData.partImageUrls.manager} alt="Uploaded image" />
+            </a>
+            <a href={res[0].serverData.partImageUrls.firefighter} target="_blank">
+              <img src={res[0].serverData.partImageUrls.firefighter} alt="Uploaded image" />
+            </a>
+          </div>
         ),
       });
     },

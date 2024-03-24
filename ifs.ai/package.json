@@ -19,6 +19,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-webcam": "^7.2.0",
+    "replicate": "^0.29.1",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
     "uploadthing": "^6.6.0"
