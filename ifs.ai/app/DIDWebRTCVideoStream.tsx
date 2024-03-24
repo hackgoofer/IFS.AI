@@ -4,7 +4,7 @@ import { initializeStreamingClient } from "./streaming-client-api";
 // import shadcn button:
 import { Button } from "@/components/ui/button";
 
-export default function DIDVideoStream({ avatarUrl, utterance }: { avatarUrl: string }) {
+export default function DIDVideoStream({ avatarUrl, utterance }: { avatarUrl: string; utterance: string }) {
   const videoElementRef = useRef(null);
   const [iceGatheringStatusLabel, setIceGatheringStatusLabel] = useState("");
   const [iceStatusLabel, setIceStatusLabel] = useState("");

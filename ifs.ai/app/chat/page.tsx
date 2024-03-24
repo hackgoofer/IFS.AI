@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { MicIcon, SendIcon } from "lucide-react";
 import { useState } from "react";
 import { IMAGE_URLS_KEY, PartImageUrls } from "@/app/constants";
+import DIDVideoStream from "@/app/DIDWebRTCVideoStream";
 
 export default function Page() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,6 +45,7 @@ export default function Page() {
               {parts.map(({ name, prettyName, imageUrl }) => (
                 <div key={name} className="flex-1 overflow-hidden rounded-lg border-2 border-stone-100">
                   <img src={imageUrl} alt={`An image of you as a ${name}`} />
+                  {/*<DIDVideoStream avatarUrl={imageUrl} utterance={"hello there"} />*/}
                   <p className="my-2 text-lg font-semibold">{prettyName}</p>
                 </div>
               ))}
@@ -55,6 +57,8 @@ export default function Page() {
                   e.preventDefault();
                   setIsSubmitting(true);
                   setInputValue("");
+
+                  // TODO: Actually call the prompt(s)
                   console.log("Submitted", e);
                   setTimeout(() => setIsSubmitting(false), 2000);
                 }}
