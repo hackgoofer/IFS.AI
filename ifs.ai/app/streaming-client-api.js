@@ -121,6 +121,7 @@ export function initializeStreamingClient({
   }
 
   function setVideoElement(stream) {
+    console.log("setVideoElement", stream, videoElementRef);
     if (!stream) return;
     if (!videoElementRef) return;
     videoElementRef.current.srcObject = stream;
@@ -135,6 +136,7 @@ export function initializeStreamingClient({
   }
 
   function playIdleVideo() {
+    return;
     console.log("playing idle video");
     if (!videoElementRef) return;
     videoElementRef.current.srcObject = undefined;
@@ -219,6 +221,11 @@ export function initializeStreamingClient({
     },
     say: async (input) => {
       // connectionState not supported in firefox
+      console.log(
+        "say:",
+        peerConnection?.signalingState === "stable",
+        peerConnection?.iceConnectionState === "connected",
+      );
       if (peerConnection?.signalingState === "stable" || peerConnection?.iceConnectionState === "connected") {
         const playResponse = await fetchWithRetries(`${DID_API.url}/${DID_API.service}/streams/${streamId}`, {
           method: "POST",

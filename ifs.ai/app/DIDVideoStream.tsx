@@ -4,7 +4,7 @@ import { initializeStreamingClient } from "./streaming-client-api";
 // import shadcn button:
 import { Button } from "@/components/ui/button";
 
-export default function DIDVideoStream({ avatarUrl }: { avatarUrl: string }) {
+export default function DIDVideoStream({ avatarUrl, utterance }: { avatarUrl: string }) {
   const videoElementRef = useRef(null);
   const [iceGatheringStatusLabel, setIceGatheringStatusLabel] = useState("");
   const [iceStatusLabel, setIceStatusLabel] = useState("");
@@ -12,8 +12,6 @@ export default function DIDVideoStream({ avatarUrl }: { avatarUrl: string }) {
   const [signalingStatusLabel, setSignalingStatusLabel] = useState("");
   const [streamingStatusLabel, setStreamingStatusLabel] = useState("");
   const [streamingClient, setStreamingClient] = useState(null);
-
-  const [utterance, setUtterance] = useState("This is an arbitrary utterance");
 
   useEffect(() => {
     console.log("DIDVideoStream mounted", videoElementRef);
@@ -33,6 +31,17 @@ export default function DIDVideoStream({ avatarUrl }: { avatarUrl: string }) {
     client.connect();
   }, [avatarUrl, videoElementRef]);
 
+  // call client.say when utterance changes or when peer connection is 'connected'
+  useEffect(() => {
+    console.log("utterance or peerStatusLabel changed", [utterance, peerStatusLabel, iceStatusLabel]);
+    if (peerStatusLabel !== "connected" || iceStatusLabel !== "connected") {
+      return;
+    }
+    // This oddly isn't playing even though it seems equivalent to the setTimeout below.
+    streamingClient?.say(utterance);
+    // streamingClient?.say(utterance);
+  }, [utterance, peerStatusLabel, iceStatusLabel]);
+
   return (
     <div>
       <div className="video-wrapper">
@@ -46,7 +55,7 @@ export default function DIDVideoStream({ avatarUrl }: { avatarUrl: string }) {
           Connect
         </Button>
         <Button onClick={() => streamingClient?.say(utterance)} type="button">
-          Say next thing
+          Say "{utterance}"
         </Button>
         <Button onClick={streamingClient?.destroy} type="button">
           Destroy
