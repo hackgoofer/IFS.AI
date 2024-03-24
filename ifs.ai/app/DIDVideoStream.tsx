@@ -23,9 +23,8 @@ export default function DIDVideoStream({ avatarUrl, utterance }: { avatarUrl: st
       setIsFetching(false);
       const data = await result;
       console.log(data);
-      console.log(data.text);
       // set video src to the returned URL
-      videoElement?.current?.setAttribute("src", data.text());
+      videoElement?.current?.setAttribute("src", await data.text());
     };
     doSay();
   }, [utterance, avatarUrl]);
