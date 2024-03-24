@@ -164,7 +164,6 @@ button {
     font-size: 16px;
     margin: 0 5px;
     background-color: #7459fe;
-    color: #fff;
 }
 
 button:hover {
@@ -193,15 +192,16 @@ button:hover {
     background-position: top;
 }
 
-#xxvideo-wrapper div {
+#video-wrapper div {
     width: 400px;
+    height: 400px;
     margin: 0 auto;
     padding: 50px 0 0 0;
 }
 video {
+
     display: block;
-    /*border:1px solid;*/
-    border-radius: 50%;
-    background-color: #fff;
+    border:1px solid grey;
+    border-radius: 5px
 }
 
