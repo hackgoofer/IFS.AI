@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { initializeStreamingClient } from "./streaming-client-api";
 
 export default function DIDVideoStream({ avatarUrl } : { avatarUrl: string }) {
-  const videoElement = useRef(null);
+  const videoElementRef = useRef(null);
   const [iceGatheringStatusLabel, setIceGatheringStatusLabel] = useState('');
   const [iceStatusLabel, setIceStatusLabel] = useState('');
   const [peerStatusLabel, setPeerStatusLabel] = useState('');
@@ -11,13 +11,13 @@ export default function DIDVideoStream({ avatarUrl } : { avatarUrl: string }) {
   const [streamingClient, setStreamingClient] = useState(null);
 
   useEffect(() => {
-    console.log('DIDVideoStream mounted', videoElement);
-    if (!videoElement) {
+    console.log('DIDVideoStream mounted', videoElementRef);
+    if (!videoElementRef) {
       return
     }
     const client = initializeStreamingClient({
       avatarUrl,
-      videoElement,
+      videoElementRef,
       setIceGatheringStatusLabel,
       setIceStatusLabel,
       setPeerStatusLabel,
@@ -25,7 +25,7 @@ export default function DIDVideoStream({ avatarUrl } : { avatarUrl: string }) {
       setStreamingStatusLabel,
     });
     setStreamingClient(client);
-  }, [avatarUrl, videoElement]);
+  }, [avatarUrl, videoElementRef]);
 
   return (
     <div>
@@ -35,7 +35,7 @@ export default function DIDVideoStream({ avatarUrl } : { avatarUrl: string }) {
             width="400"
             height="400"
             autoPlay
-            ref={videoElement}
+            ref={videoElementRef}
           ></video>
         </div>
       </div>
