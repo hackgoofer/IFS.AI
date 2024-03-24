@@ -80,6 +80,8 @@ def get_response():
         system = manager_system
     elif responder == "firefighter":
         system = firefighter_system
+
+    system += " Reply with less than three sentences."
     messages = [
         ChatMessage(role="system", content=system),
     ]
