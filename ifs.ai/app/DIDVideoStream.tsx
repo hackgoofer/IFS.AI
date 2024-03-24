@@ -24,7 +24,6 @@ export default function DIDVideoStream({ avatarUrl, utterance }: { avatarUrl: st
       const data = await result;
       const text = await data.text();
       console.log("setting video src to", text);
-      // TODO: get this working
       videoElement?.current?.setAttribute("src", text);
     };
     doSay();
@@ -34,7 +33,7 @@ export default function DIDVideoStream({ avatarUrl, utterance }: { avatarUrl: st
     <div>
       <div className="video-wrapper">
         <div>
-          <video poster={avatarUrl} width="400" height="400" autoPlay></video>
+          <video ref={videoElement} poster={avatarUrl} width="400" height="400" autoPlay></video>
         </div>
       </div>
       <br />

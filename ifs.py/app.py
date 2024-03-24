@@ -23,7 +23,7 @@ app = Flask(__name__)
 # Enable CORS
 CORS(app, resources={r'/*': {'origins': '*'}})
 
-auth = "Basic " + os.getenv("D_ID_API_KEY")
+auth = "Bearer " + os.getenv("D_ID_API_KEY")
 
 @app.route('/get_responder', methods=['POST'])
 def get_responder():
