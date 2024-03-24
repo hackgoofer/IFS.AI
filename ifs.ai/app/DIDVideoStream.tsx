@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 
 const URL = "http://localhost:5000";
 
@@ -16,6 +16,7 @@ const URL = "http://localhost:5000";
 export default function DIDVideoStream({ avatarUrl, utterance }: { avatarUrl: string; utterance: string }) {
   const videoElement = useRef<HTMLVideoElement>(null);
   const [isFetching, setIsFetching] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const doSay = async () => {
@@ -39,6 +40,7 @@ export default function DIDVideoStream({ avatarUrl, utterance }: { avatarUrl: st
         videoElement?.current?.setAttribute("src", data);
       } catch (error) {
         console.error("Error fetching video:", error);
+        toast({ title: "Error fetching video", description: JSON.stringify(error) });
         // Display an error message to the user or handle the error gracefully
       } finally {
         setIsFetching(false);
@@ -46,7 +48,7 @@ export default function DIDVideoStream({ avatarUrl, utterance }: { avatarUrl: st
     };
 
     doSay();
-  }, [utterance, avatarUrl]);
+  }, [utterance, avatarUrl, toast]);
 
   return (
     <div>

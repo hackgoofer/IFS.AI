@@ -3,6 +3,7 @@ import { useState } from "react";
 import DIDVideoStream from "@/app/DIDWebRTCVideoStream";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function Home() {
   const [streamingClients, setStreamingClients] = useState([
@@ -26,7 +27,7 @@ export default function Home() {
       <div id="content">
         {streamingClients.map((_, index) => (
           <div key={index} className="flex flex-col items-center">
-            <input
+            <Input
               type="text"
               value={utterances[index]}
               onChange={(e) => {
