@@ -7,6 +7,7 @@ import { useState } from "react";
 import { IMAGE_URLS_KEY, PartImageUrls } from "@/app/constants";
 import DIDVideoStream from "@/app/DIDWebRTCVideoStream";
 import Loading from "@/components/ui/loading"; // Import a LoadingScreen component
+import SpeechToText from "@/components/ui/speech-to-text";
 
 export default function Page() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -109,9 +110,7 @@ export default function Page() {
                   <SendIcon className="mr-2 h-4 w-4" />
                   Send
                 </Button>
-                <Button className="px-2">
-                  <MicIcon className="h-6 w-6" />
-                </Button>
+                <SpeechToText onTranscript={(transcript) => setInputValue(transcript)} />
               </form>
             </div>
           </div>
