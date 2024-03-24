@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
+  --foreground-rgb: 5, 5, 5;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
 }
@@ -11,7 +11,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
+    --background-start-rgb: 5, 5, 5;
     --background-end-rgb: 0, 0, 0;
   }
 }
@@ -72,7 +72,7 @@ body {
   color: orange;
 }
 .iceGatheringState-complete {
-  color: black;
+  color: grey;
 }
 
 .signalingState-stable {
@@ -103,7 +103,7 @@ body * {
   text-align: center;
 }
 
-#content {
+#xxcontent {
   width: 820px;
   position: relative;
   margin: 0 auto;
@@ -145,13 +145,13 @@ button:hover {
   padding-bottom: 10px;
 }
 
-#video-wrapper {
+#xxvideo-wrapper {
   background: url(bg.png);
   height: 500px;
   background-position: top;
 }
 
-#video-wrapper div {
+#xxvideo-wrapper div {
   width: 400px;
   margin: 0 auto;
   padding: 50px 0 0 0;
