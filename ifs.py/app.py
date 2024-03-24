@@ -36,6 +36,9 @@ if D_ID_API_KEY is None:
     raise Exception("D_ID_API_KEY not found in environment")
 auth = "Bearer " + D_ID_API_KEY
 
+
+# To test this:
+# curl -X POST http://127.0.0.1:5000/get_system_prompts -H "Content-Type: application/json" -d '{"user_message": "I have a feeling of inadequacy. Are we building the right thing? Are we going to be billionaires in the next 12 months, is this what I want? Is this what makes me happy? Will I find love, why?"}'
 @app.route('/get_system_prompts', methods=['POST'])
 def get_system_prompts():
     data = request.get_json()
