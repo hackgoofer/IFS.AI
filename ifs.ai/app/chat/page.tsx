@@ -28,8 +28,8 @@ export default function Page() {
   return (
     <main className="flex min-h-svh flex-col px-24 py-10">
       <p className="mb-10 text-3xl font-semibold">IFS Therapy</p>
-      <div className="flex w-full flex-grow basis-0">
-        <div className="h-full w-4/5 flex-col justify-between">
+      <div className="flex w-full flex-grow basis-0 space-x-4">
+        <div className="h-full w-4/5 flex-col">
           <div className="flex h-full flex-col justify-between">
             <div className="flex flex-grow basis-0 flex-row space-x-2">
               {parts.map(({ name, prettyName, imageUrl }) => (
@@ -53,7 +53,7 @@ export default function Page() {
             </div>
           </div>
         </div>
-        <div className="mx-2 w-1/5 bg-stone-300">Sidebar</div>
+        <div className="mx-2 w-1/5 rounded-lg border-2 border-stone-100 py-4">Sidebar</div>
       </div>
     </main>
   );
