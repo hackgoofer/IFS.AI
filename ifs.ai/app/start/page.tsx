@@ -90,52 +90,57 @@ export default function Page() {
           <p className="text-stone-400">Connect with your inner selves.</p>
         </div>
         {!imagesCaptured && (
-          <Webcam
-            ref={webcamRef}
-            audio={false}
-            height={800}
-            screenshotFormat="image/jpeg"
-            width={800}
-            className="rounded-xl"
-            videoConstraints={{ width: 800, height: 800, facingMode: "user" }}
-          />
+          <>
+            <Webcam
+              ref={webcamRef}
+              audio={false}
+              height={800}
+              screenshotFormat="image/jpeg"
+              width={800}
+              className="rounded-xl"
+              videoConstraints={{ width: 800, height: 800, facingMode: "user" }}
+            />
+            <Button
+              disabled={imagesCaptured}
+              onClick={() => {
+                if (!webcamRef.current) {
+                  toast({ title: "Not ready", description: "Please grant permissions and wait" });
+                } else {
+                  const ss = webcamRef.current.getScreenshot();
+                  if (!ss) {
+                    toast({ title: "Couldn't capture image", variant: "destructive" });
+                  } else {
+                    // toast({
+                    //   title: "Captured",
+                    //   description: <img src={ss} alt="The captured selfie image from the webcam" />,
+                    // });
+                    startUpload([dataURLtoFile(ss, "selfie.jpg")]);
+                    setImagesCaptured(true);
+                  }
+                }
+              }}
+            >
+              {imagesCaptured ? "Looking inside you..." : "Start 🤳"}
+            </Button>
+          </>
         )}
-        <Button
-          disabled={imagesCaptured}
-          onClick={() => {
-            if (!webcamRef.current) {
-              toast({ title: "Not ready", description: "Please grant permissions and wait" });
-            } else {
-              const ss = webcamRef.current.getScreenshot();
-              if (!ss) {
-                toast({ title: "Couldn't capture image", variant: "destructive" });
-              } else {
-                // toast({
-                //   title: "Captured",
-                //   description: <img src={ss} alt="The captured selfie image from the webcam" />,
-                // });
-                startUpload([dataURLtoFile(ss, "selfie.jpg")]);
-                setImagesCaptured(true);
-              }
-            }
-          }}
-        >
-          {imagesCaptured ? "Looking inside you..." : "Start 🤳"}
-        </Button>
-        {imagesCaptured && !rantProcessed && (
+
+        {imagesCaptured && (
           <div className="flex w-full max-w-xl flex-col items-center space-y-4">
             <div>
               <p>Now tell me about your problems...</p>
             </div>
-            <SpeechToText
-              onTranscript={(transcript) => setRant(transcript)}
-              onEnd={() => {
-                window.localStorage.setItem(getRantKeyForId(id), rant);
-                setRantProcessed(true);
-              }}
-            />
+            {!rantProcessed && (
+              <SpeechToText
+                onTranscript={(transcript) => setRant(transcript)}
+                onEnd={() => {
+                  window.localStorage.setItem(getRantKeyForId(id), rant);
+                  setRantProcessed(true);
+                }}
+              />
+            )}
             <div className="italic text-stone-400">{rant}</div>
-            {imageUrls.firefighter && <p className="text-xs text-stone-400">Images generated</p>}
+            <p className="text-xs text-stone-400">{imageUrls.firefighter ? "Images generated" : "Generating images"}</p>
           </div>
         )}
       </div>
