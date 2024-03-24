@@ -17,25 +17,31 @@ export default function Page() {
   const imageUrls: PartImageUrls = JSON.parse(window.localStorage.getItem(IMAGE_URLS_KEY) ?? "{}");
   const parts = [
     {
-      name: "firefighter",
-      prettyName: "Firefighter 🚒",
-      imageUrl:
-        imageUrls.firefighter ??
-        "https://media.discordapp.net/attachments/1221190777259167784/1221307109006770316/robert_firefighter.png?ex=661219e1&is=65ffa4e1&hm=abc4dbc5b4131395cbcd4d5d028c7d51047bf1d0cc661e6fb2c21bde3123132a&=&format=webp&quality=lossless&width=1557&height=1557",
-    },
-    {
-      name: "exile",
-      prettyName: "Exile 🧭",
-      imageUrl:
-        imageUrls.exile ??
-        "https://media.discordapp.net/attachments/1221190777259167784/1221307108549464165/robert_exile.png?ex=661219e1&is=65ffa4e1&hm=bed1c819bb6c88d0a86262cdd2ba334d0d10ec701f296abee75d32c3991e053e&=&format=webp&quality=lossless&width=1557&height=1557",
-    },
-    {
-      name: "manager",
+      name: "Manager",
       prettyName: "Manager 🤵",
       imageUrl:
         imageUrls.manager ??
         "https://media.discordapp.net/attachments/1221190777259167784/1221307109392519168/robert_manager.png?ex=661219e1&is=65ffa4e1&hm=0ac923036baf4bad33b5fd508c90e2ac60621bfec876ada9d325a084e4fc2b00&=&format=webp&quality=lossless&width=1557&height=1557",
+      personality: "As a Manager in this situation, I feel a sense of duty and responsibility. I am constantly questioning if we're doing the right thing and whether our venture will yield the desired results in a short span. The need for surety causes additional stress and anxiety, driving me to closely scrutinize and control every aspect of our plan.",
+      unmetNeeds: ['certainty', 'success', 'validation'],
+    },
+    {
+      name: "Exile",
+      prettyName: "Exile 🧭",
+      imageUrl:
+        imageUrls.exile ??
+        "https://media.discordapp.net/attachments/1221190777259167784/1221307108549464165/robert_exile.png?ex=661219e1&is=65ffa4e1&hm=bed1c819bb6c88d0a86262cdd2ba334d0d10ec701f296abee75d32c3991e053e&=&format=webp&quality=lossless&width=1557&height=1557",
+      personality: 'As an Exile, I carry the heavy burdens of self-doubt and feelings of inadequacy. I question if this is the life I truly want and if these achievements will bring me happiness. My inner turbulence intensifies when thinking about love and why it seems elusive to me. I am the receptacle of unvoiced sadness and yearning, often suppressed to maintain an outward impression of confidence.',
+      unmetNeeds: ['companionship', 'contentment', 'self-acceptance'],
+    },
+    {
+      name: "Firefighter",
+      prettyName: "Firefighter 🚒",
+      imageUrl:
+        imageUrls.firefighter ??
+        "https://media.discordapp.net/attachments/1221190777259167784/1221307109006770316/robert_firefighter.png?ex=661219e1&is=65ffa4e1&hm=abc4dbc5b4131395cbcd4d5d028c7d51047bf1d0cc661e6fb2c21bde3123132a&=&format=webp&quality=lossless&width=1557&height=1557",
+      personality: "As a Firefighter, I react to these feelings of insecurity and uncertainty by pushing towards ambitious goals like becoming a billionaire in 12 months. My approach can be seen as impulsive or even reckless, as it's driven more by a need to numb the deep-seated feelings of inadequacy than by a solid plan.",
+      unmetNeeds: ['fulfillment', 'validation', 'sense of worth'],
     },
   ];
 
@@ -48,11 +54,12 @@ export default function Page() {
         <div className="h-full w-4/5 flex-col">
           <div className="flex h-full flex-col justify-between">
             <div className="flex flex-grow basis-0 flex-row space-x-2">
-              {parts.map(({ name, prettyName, imageUrl }) => (
+              {parts.map(({ name, prettyName, imageUrl, personality, unmetNeeds }) => (
                 <div key={name} className="flex-1 overflow-hidden rounded-lg border-2 border-stone-100">
                   <img src={imageUrl} alt={`An image of you as a ${name}`} />
-                  {/*<DIDVideoStream avatarUrl={imageUrl} utterance={"hello there"} />*/}
                   <p className="my-2 text-lg font-semibold">{prettyName}</p>
+                  <p className="my-2 text-sm">{personality}</p>
+                  <p className="my-2 text-sm">Unmet Needs: {unmetNeeds.join(', ')}</p>
                 </div>
               ))}
             </div>
