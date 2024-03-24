@@ -76,7 +76,7 @@ export default function Page() {
               ))}
             </div>
             <div className="mt-4 flex justify-end">
-              <div className="flex w-full space-x-2 mr-2">
+              <div className="flex w-full space-x-2 mr-1">
                 <Input
                   value={inputValue}
                   placeholder="What do you think?"
