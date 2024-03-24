@@ -73,9 +73,11 @@ export default function Page({ searchParams }: { searchParams: { id: number } })
               {parts.map(({ name, prettyName, imageUrl, personality, unmetNeeds }) => (
                 <div key={name} className="flex-1 overflow-hidden rounded-lg border-2 border-stone-100">
                   <img className="rounded-lg" src={imageUrl} alt={`An image of you as a ${name}`} />
-                  <p className="my-2 text-center text-lg font-semibold">{prettyName}</p>
-                  <p className="my-2 text-sm">{personality}</p>
-                  <p className="my-2 text-sm">Unmet Needs: {unmetNeeds.join(", ")}</p>
+                  <div className="px-2">
+                    <p className="my-2 text-center text-lg font-semibold">{prettyName}</p>
+                    <p className="my-2 text-sm">{personality}</p>
+                    <p className="my-2 text-sm">Unmet Needs: {unmetNeeds.join(", ")}</p>
+                  </div>
                 </div>
               ))}
             </div>
