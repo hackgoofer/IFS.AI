@@ -8,6 +8,7 @@ import { IMAGE_URLS_KEY, PartImageUrls } from "@/app/constants";
 import DIDVideoStream from "@/app/DIDWebRTCVideoStream";
 import Loading from "@/components/ui/loading"; // Import a LoadingScreen component
 import SpeechToText from "@/components/ui/speech-to-text";
+import { MessageBox } from 'react-chat-elements'
 
 export default function Page() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,12 +47,13 @@ export default function Page() {
     },
   ];
 
+  
 
   return (
     <main className="flex min-h-svh flex-col px-24 py-10">
       {isSubmitting ? <Loading></Loading> : <div/>}
       <p className="mb-10 text-3xl font-semibold">IFS Therapy</p> 
-      <div className="flex w-full flex-grow basis-0 space-x-4">
+      <div className="flex w-full h-full flex-grow basis-0 space-x-4">
         <div className="h-full w-4/5 flex-col">
           <div className="flex h-full flex-col justify-between">
             <div className="flex flex-grow basis-0 flex-row space-x-2">
@@ -68,7 +70,6 @@ export default function Page() {
               <form
                 className="flex w-full space-x-2"
                 onSubmit={(e) => {
-                  document.querySelector("#log").innerHTML += '<div style="text-align: right;"><span>me: ' + inputValue + '</span></div>';
                   e.preventDefault();
                   setIsSubmitting(true);
                   fetch('http://localhost:5000/get_response', {
@@ -88,7 +89,6 @@ export default function Page() {
                     setHistory(prevHistory => [...prevHistory, {"role": "user", "text": inputValue}, {"role": role, "text": responder + ": " + text}]);
                     setPrevPart(responder);
                     console.log(data);
-                    document.querySelector("#log").innerHTML += '<div style="text-align: left;"><span>' + responder + ': ' + text + '</span></div>';
                   })
                   .catch((error) => {
                     console.error('Error:', error);
@@ -115,8 +115,43 @@ export default function Page() {
             </div>
           </div>
         </div>
-        <div className="mx-2 w-1/5 rounded-lg border-2 border-stone-100 py-4">Sidebar
-          <div id="log"></div>
+        <div className="mx-2 w-1/5 rounded-lg border-2 border-stone-100 py-4 overflow-auto h-full max-h-full">Sidebar
+        {history.map(({role, text}, index) => {
+          let bgColor;
+          if (role === "user") {
+            bgColor = "white";
+          } else if (text.toLowerCase().includes("exile")) {
+            bgColor = "#FFFFE0";
+          } else if (text.toLowerCase().includes("firefighter")) {
+            bgColor = "#FFC0CB";
+          } else if (text.toLowerCase().includes("manager")) {
+            bgColor = "#ADD8E6";
+          } else {
+            bgColor = "#000000";
+          }
+          return (
+            <div style={{backgroundColor: bgColor, borderRadius: '10px'}}>
+              <MessageBox
+                key={text}
+                id={index.toString()}
+                title={role}
+                titleColor="#000000" // Add this line
+                position={role === "user" ? "right" : "left"}
+                type={"text"}
+                text={role === "user" ? "User: " + text : text}
+                date={new Date()}
+                focus={false}
+                forwarded={false}
+                replyButton={false}
+                removeButton={false}
+                status={"read"}
+                notch={false}
+                avatar={""}
+                retracted={false} // Add this line
+              />
+            </div>
+          );
+        })}
         </div>
       </div>
     </main>
