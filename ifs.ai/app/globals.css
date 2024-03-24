@@ -145,34 +145,7 @@ body * {
     text-align: center;
 }
 
-#xxcontent {
-    width: 820px;
-    position: relative;
-    margin: 0 auto;
-}
-
-#buttons {
-    clear: both;
-    padding: 0 0 0 0;
-    text-align: center;
-}
-
-button {
-    padding: 10px 20px;
-    border-radius: 5px;
-    border: none;
-    font-size: 16px;
-    margin: 0 5px;
-    background-color: #7459fe;
-}
-
-button:hover {
-    background-color: #9480ff;
-    cursor: pointer;
-    transition: all 0.2s ease-out;
-}
-
-#status {
+.status {
     clear: both;
     padding: 20px 0 0 0;
     text-align: left;
@@ -182,24 +155,17 @@ button:hover {
     font-size: 15px;
 }
 
-#status div {
+.status div {
     padding-bottom: 10px;
 }
 
-#xxvideo-wrapper {
-    background: url(bg.png);
-    height: 500px;
-    background-position: top;
-}
-
-#video-wrapper div {
+.video-wrapper div {
     width: 400px;
     height: 400px;
     margin: 0 auto;
     padding: 50px 0 0 0;
 }
 video {
-
     display: block;
     border:1px solid grey;
     border-radius: 5px

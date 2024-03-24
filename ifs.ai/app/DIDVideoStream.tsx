@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { initializeStreamingClient } from "./streaming-client-api";
 
+// import shadcn button:
+import { Button } from "@/components/ui/button";
+
 export default function DIDVideoStream({ avatarUrl }: { avatarUrl: string }) {
   const videoElementRef = useRef(null);
   const [iceGatheringStatusLabel, setIceGatheringStatusLabel] = useState("");
@@ -31,24 +34,24 @@ export default function DIDVideoStream({ avatarUrl }: { avatarUrl: string }) {
 
   return (
     <div>
-      <div id="video-wrapper">
+      <div className="video-wrapper">
         <div>
           <video width="400" height="400" autoPlay ref={videoElementRef}></video>
         </div>
       </div>
       <br />
-      <div id="buttons">
-        <button onClick={streamingClient?.connect} type="button">
+      <div className="buttons">
+        <Button onClick={streamingClient?.connect} type="button">
           Connect
-        </button>
-        <button onClick={() => streamingClient?.say(utterance)} type="button">
+        </Button>
+        <Button onClick={() => streamingClient?.say(utterance)} type="button">
           Say next thing
-        </button>
-        <button onClick={streamingClient?.destroy} type="button">
+        </Button>
+        <Button onClick={streamingClient?.destroy} type="button">
           Destroy
-        </button>
+        </Button>
       </div>
-      <div id="status">
+      <div className="status">
         ICE gathering status: <label>{iceGatheringStatusLabel}</label>
         <br />
         ICE status: <label>{iceStatusLabel}</label>
