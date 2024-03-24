@@ -9,11 +9,17 @@ from mistralai.models.chat_completion import ChatMessage
 from openai import OpenAI
 from pydantic import BaseModel, Field, validator
 from parts import IFSParts
+import instructor
 
 load_dotenv()
 
 groq = os.getenv("GROQ_ENV")
-openapi_client = OpenAI()
+instructor_client = instructor.patch(
+    OpenAI(
+        # This is the default and can be omitted
+        api_key=os.getenv("OPENAI_API_KEY"),
+    )
+)
 mistral_model = "mistral-large-latest"
 mistral_client = MistralClient(api_key=os.getenv("MISTRAL_API_KEY"))
 # flask cors:
@@ -51,7 +57,7 @@ Firefighters: Parts that act out to distract or numb the pain of the exiles, oft
     retry_count = 0
     while retry_count < 3:
         try:
-            result = openai_client.chat.completions.create(
+            result = instructor_client.chat.completions.create(
                 model="gpt-4",
                 response_model=IFSParts,
                 messages=[
