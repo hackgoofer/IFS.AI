@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SendIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { getImageUrlsKeyForId, getRantKeyForId, PartImageUrls } from "@/app/constants";
+import { getImageUrlsKeyForId, getRantKeyForId, getSystemPromptsKeyForId, PartImageUrls } from "@/app/constants";
 import Loading from "@/components/ui/loading"; // Import a LoadingScreen component
 import SpeechToText from "@/components/ui/speech-to-text";
 import { MessageBox } from "react-chat-elements";
@@ -17,34 +17,41 @@ export default function Page({ searchParams }: { searchParams: { id: number } })
   const [history, setHistory] = useState<{ role: string; text: string; responder: string }[]>([]);
   const [prevPart, setPrevPart] = useState("none");
   const [videoUrls, setVideoUrls] = useState<{ [key: string]: string }>({});
-  const [systemPrompts, setSytemPrompts] = useState<{ [key: string]: string }>({});
+  const [systemPrompts, setSystemPrompts] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
-    async function getPrompts() {
-      const r = await fetch("http://127.0.0.1:5000/get_system_prompts", {
-        body: JSON.stringify({
-          user_message: window.localStorage.getItem(getRantKeyForId(searchParams.id)),
-        }),
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+    const loadedSp = JSON.parse(window.localStorage.getItem(getSystemPromptsKeyForId(searchParams.id)) ?? "false");
+    if (!loadedSp) {
+      async function getPrompts() {
+        console.log("Generating system prompts");
+        const r = await fetch("http://127.0.0.1:5000/get_system_prompts", {
+          body: JSON.stringify({
+            user_message: window.localStorage.getItem(getRantKeyForId(searchParams.id)),
+          }),
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-      const response = await r.json();
-      console.log("Got prompts", response);
+        const response = await r.json();
+        console.log("Got prompts", response);
 
-      const sp = Object.fromEntries(
-        response.parts.map(({ name, personality, unmet_needs }) => [
-          name.toLowerCase(),
-          { personality: personality, unmetNeeds: unmet_needs },
-        ]),
-      );
-      console.log("SP", sp);
-      setSytemPrompts(sp);
+        const sp = Object.fromEntries(
+          response.parts.map(({ name, personality, unmet_needs }) => [
+            name.toLowerCase(),
+            { personality: personality, unmetNeeds: unmet_needs },
+          ]),
+        );
+        console.log("SP", sp);
+        setSystemPrompts(sp);
+        window.localStorage.setItem(getSystemPromptsKeyForId(searchParams.id), JSON.stringify(sp));
+      }
+
+      getPrompts();
+    } else {
+      setSystemPrompts(loadedSp);
     }
-
-    getPrompts();
   }, []);
 
   const imageUrls: PartImageUrls = JSON.parse(
