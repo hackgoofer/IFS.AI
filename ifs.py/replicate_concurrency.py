@@ -11,9 +11,9 @@ input_image_url = "https://pub-8e27fc985b9949f6ad6d8b31adae8470.r2.dev/robert.PN
 
 # Prompts for each of the calls
 prompts = [
-    "A photo of man img upclose, facing camera, looking confident and controlled, professional outfit, upright posture, orderly surroundings, muted background colors, symbols of achievement, sense of discipline and responsibility",
-    "A photo of man img upclose, facing camera, fierce expression, intense eyes, bold outfit, fiery background colors, sense of urgency and strength",
-    "A photo of man img upclose, facing camera, young and vulnerable, sad eyes, child-like clothing, sitting alone, muted background colors, sense of isolation and longing for care and acceptance"
+    "A photo of person img upclose, facing camera, looking confident and controlled, professional outfit, upright posture, orderly surroundings, muted background colors, symbols of achievement, sense of discipline and responsibility",
+    "A photo of person img upclose, facing camera, fierce expression, intense eyes, bold outfit, fiery background colors, sense of urgency and strength",
+    "A photo of person img upclose, facing camera, young and vulnerable, sad eyes, child-like clothing, sitting alone, muted background colors, sense of isolation and longing for care and acceptance"
 ]
 
 def call_replicate(prompt, input_image_url):
