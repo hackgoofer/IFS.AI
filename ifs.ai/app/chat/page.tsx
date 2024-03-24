@@ -3,12 +3,14 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MicIcon, SendIcon } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { IMAGE_URLS_KEY, PartImageUrls } from "@/app/constants";
 import DIDVideoStream from "@/app/DIDWebRTCVideoStream";
 import Loading from "@/components/ui/loading"; // Import a LoadingScreen component
 import SpeechToText from "@/components/ui/speech-to-text";
 import { MessageBox } from 'react-chat-elements'
+
+import 'react-chat-elements/dist/main.css'
 
 export default function Page() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,20 +49,27 @@ export default function Page() {
     },
   ];
 
+  const sidebarRef = useRef(null);
+
+  useEffect(() => {
+    if (sidebarRef.current) {
+      sidebarRef.current.scrollTop = sidebarRef.current.scrollHeight;
+    }
+  });
   
 
   return (
-    <main className="flex min-h-svh flex-col px-24 py-10">
+    <main className="flex min-h-svh flex-col px-4 py-10">
       {isSubmitting ? <Loading></Loading> : <div/>}
-      <p className="mb-10 text-3xl font-semibold">IFS Therapy</p> 
-      <div className="flex w-full h-full flex-grow basis-0 space-x-4">
-        <div className="h-full w-4/5 flex-col">
+      <p className="text-center mb-10 text-3xl font-semibold">IFS Therapy</p> 
+      <div className="flex w-full h-[80vh] flex-grow basis-0 space-x-4">
+        <div className="flex-auto h-full w-4/5 flex-col">
           <div className="flex h-full flex-col justify-between">
-            <div className="flex flex-grow basis-0 flex-row space-x-2">
+            <div className="flex flex-row flex-grow basis-0 space-x-2">
               {parts.map(({ name, prettyName, imageUrl, personality, unmetNeeds }) => (
                 <div key={name} className="flex-1 overflow-hidden rounded-lg border-2 border-stone-100">
-                  <img src={imageUrl} alt={`An image of you as a ${name}`} />
-                  <p className="my-2 text-lg font-semibold">{prettyName}</p>
+                  <img className="rounded-lg" src={imageUrl} alt={`An image of you as a ${name}`} />
+                  <p className="text-center my-2 text-lg font-semibold">{prettyName}</p>
                   <p className="my-2 text-sm">{personality}</p>
                   <p className="my-2 text-sm">Unmet Needs: {unmetNeeds.join(', ')}</p>
                 </div>
@@ -115,27 +124,31 @@ export default function Page() {
             </div>
           </div>
         </div>
-        <div className="mx-2 w-1/5 rounded-lg border-2 border-stone-100 py-4 overflow-auto h-full max-h-full">Sidebar
+        <div ref={sidebarRef}  className="mx-2 w-2/5 rounded-lg border-2 border-stone-100 py-4 overflow-auto overflow-y-scroll max-h-full">
+
         {history.map(({role, text}, index) => {
-          let bgColor;
+          let bgColor, parsedRole = "User";
           if (role === "user") {
             bgColor = "white";
-          } else if (text.toLowerCase().includes("exile")) {
+          } else if (text.toLowerCase().startsWith("exile")) {
             bgColor = "#FFFFE0";
-          } else if (text.toLowerCase().includes("firefighter")) {
+            parsedRole = "Exile";
+          } else if (text.toLowerCase().startsWith("firefighter")) {
             bgColor = "#FFC0CB";
-          } else if (text.toLowerCase().includes("manager")) {
+            parsedRole = "Firefighter";
+          } else if (text.toLowerCase().startsWith("manager")) {
             bgColor = "#ADD8E6";
+            parsedRole = "Manager";
           } else {
             bgColor = "#000000";
           }
           return (
-            <div style={{backgroundColor: bgColor, borderRadius: '10px'}}>
+            <div style={{backgroundColor: bgColor, borderRadius: '10px', fontSize: 10}}>
               <MessageBox
                 key={text}
                 id={index.toString()}
-                title={role}
-                titleColor="#000000" // Add this line
+                title={parsedRole}
+                titleColor={bgColor} // Add this line
                 position={role === "user" ? "right" : "left"}
                 type={"text"}
                 text={role === "user" ? "User: " + text : text}

@@ -142,7 +142,7 @@
 
 body * {
     font-family: 'Mulish', sans-serif;
-    text-align: center;
+    /* text-align: center;  BAD DO NOT DO THIS */
 }
 
 .status {
