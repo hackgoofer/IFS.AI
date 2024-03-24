@@ -188,7 +188,7 @@ def create_talk():
             "subtitles": "false",
             "provider": {
                 "type": "microsoft",
-                "voice_id": "en-US-JennyNeural"
+                "voice_id": "en-GB-RyanNeural"
             },
             "input": text,
         },
