@@ -18,13 +18,14 @@ export default function DIDVideoStream({ avatarUrl, utterance }: { avatarUrl: st
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ avatarUrl, utterance }),
+        body: JSON.stringify({ image_url: avatarUrl, text: utterance }),
       });
       setIsFetching(false);
       const data = await result;
-      console.log(data);
-      // set video src to the returned URL
-      videoElement?.current?.setAttribute("src", data);
+      const text = await data.text();
+      console.log("setting video src to", text);
+      // TODO: get this working
+      videoElement?.current?.setAttribute("src", text);
     };
     doSay();
   }, [utterance, avatarUrl]);

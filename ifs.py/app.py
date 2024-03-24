@@ -53,6 +53,7 @@ def create_talk():
     # parse body as json:
     request_payload = request.get_json()
 
+    print("rpayload:", request_payload)
     payload = {
         "script": {
             "type": "text",
@@ -77,6 +78,7 @@ def create_talk():
 
     response = requests.post(url, json=payload, headers=headers)
 
+    print(response.text)
     talk_id = json.loads(response.text)['id']
 
     while talk_ready(talk_id) == False:
