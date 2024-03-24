@@ -1,0 +1,7 @@
+Flask
+requests
+jsonify
+flask_cors
+python-dotenv
+mistralai
+openai
