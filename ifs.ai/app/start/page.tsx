@@ -122,7 +122,7 @@ export default function Page() {
         >
           {imagesCaptured ? "Looking inside you..." : "Start 🤳"}
         </Button>
-        {(true || (imagesCaptured && !rantProcessed)) && (
+        {imagesCaptured && !rantProcessed && (
           <div className="flex w-full max-w-xl flex-col items-center space-y-4">
             <div>
               <p>Now tell me about your problems...</p>
