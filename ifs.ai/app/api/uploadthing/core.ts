@@ -26,6 +26,8 @@ export const fileRouter = {
 
       console.log("file url", file.url);
 
+      // TODO: Call replicate
+
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
       return { uploadedBy: metadata.userId, imageUrl: file.url };
     }),
