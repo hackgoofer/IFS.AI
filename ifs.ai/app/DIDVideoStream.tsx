@@ -36,7 +36,7 @@ export default function DIDVideoStream({ avatarUrl }: { avatarUrl: string }) {
     <div>
       <div className="video-wrapper">
         <div>
-          <video width="400" height="400" autoPlay ref={videoElementRef}></video>
+          <video ref={videoElementRef} poster={avatarUrl} width="400" height="400" autoPlay></video>
         </div>
       </div>
       <br />
