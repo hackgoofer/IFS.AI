@@ -25,10 +25,11 @@ CORS(app, resources={r'/*': {'origins': '*'}})
 
 auth = "Bearer " + os.getenv("D_ID_API_KEY")
 
-@app.route('/get_responder', methods=['POST'])
-def get_responder():
+@app.route('/get_response', methods=['POST'])
+def get_response():
     data = request.get_json()
     prev_part = data.get('prev_part')
+    history = data.get('history')
     user_message = data.get('user_message')
 
     messages = [
@@ -37,7 +38,7 @@ def get_responder():
             "content": [
                 {
                     "type": "text",
-                    "text": f"You help decide which part should respond the the users' question, only reply with one of three options: firefighter, manager, or exile. The user should continue to talk to the same part if no context switch is provided.",
+                    "text": f"You help decide which part should respond the the users' question, only reply with one of three options: firefighter, manager, or exile. The user should continue to talk to the same part if no context switch is provided. If prev_part is none, pick the best one to respond as.",
                 },
             ],
         },
@@ -58,22 +59,19 @@ def get_responder():
         max_tokens=300,
     )
     reply = response.choices[0].message.content
+    responder = None
     if "firefighter" in reply:
-        return "firefighter"
+        responder = "firefighter"
     elif "manager" in reply:
-        return "manager"
+        responder = "manager"
     elif "exile" in reply:
-        return "exile"
+        responder = "exile"
 
-@app.route('/get_response', methods=['POST'])
-def get_response():
     # expects responder: exile|manager|firefighter
     # expects history: list of tuples (role, text)
     exile_system = "I respond as an Exile, I carry the deep questions and doubts about whether we're on the right path, questioning our pursuit of wealth and status. To the Manager, I might seem like a source of vulnerability or weakness, bringing up uncertainties and existential worries that challenge our direction. My relationship with the Firefighter is more synergistic; we both yearn for something beyond material success - a sense of purpose, happiness, and genuine connection. I feel somewhat protected by The Manager, who tries to keep these painful doubts at bay, but I also long for my voice to be heard and my concerns to be addressed, believing that our true path lies in answering these deeper questions. I am young and unsure. I need to tell the user about my unmet needs and work with them to come up with actionable items to help them feel better. Reply as an exile, reply with just text and talk about an exile's feelings a lot."
     manager_system = "As a Manager, I am always pushing for success. I feel like I'm constantly on the lookout, trying to protect us from feeling inadequate or not good enough. I set high goals and standards, like becoming a billionaire, because I believe that's what we need to feel secure and valued. However, I realize that in my efforts to manage our self-esteem and future, I sometimes overlook the deeper questions and needs that the Exile and the Firefighter bring up. I see them as vulnerabilities that might slow us down or divert us from our path. I am logical and mature. I need to tell the user about my unmet needs and work with them to come up with actionable items to help them feel better. Reply as a manager, reply with just text and talk about a manager's feelings a lot."
     firefighter_system = "As a firefighter, I often find myself in the middle of the Manager's ambitions and the Exile's doubts. I understand the Manager's drive and the protection it offers against feeling inadequate, but I also share the Exile's longing for deeper meaning and fulfillment in life. My role feels like a response to the pain and vulnerability both of these parts bring to the surface. When the weight of our ambitions or the depth of our questions become too much, I step in, seeking love and validation to soothe our shared fears and discomfort. I act to distract or shield us from the pain of not meeting the Manager's high standards or the Exile's existential worries, believing that love and acceptance might fill the voids they expose."
-    data = request.get_json()
-    responder = data.get('responder')
     if responder == "exile":
         system = exile_system
     elif responder == "manager":
@@ -85,15 +83,16 @@ def get_response():
     messages = [
         ChatMessage(role="system", content=system),
     ]
-    history = data.get('history')
     for message in history:
-        role, text = message
+        role = message.get('role')
+        text = message.get('text')
         messages.append(ChatMessage(role=role, content=text))
-    chat_response = client.chat(
+    
+    chat_response = mistral_client.chat(
         model=mistral_model,
         messages=messages,
     )
-    return chat_response.choices[0].message.content
+    return {"role": "assistant", "text": chat_response.choices[0].message.content, "responder": responder}
 
 def talk_ready(talk_id):
     url = "https://api.d-id.com/talks/" + talk_id

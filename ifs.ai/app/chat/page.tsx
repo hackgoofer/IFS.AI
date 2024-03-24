@@ -10,7 +10,8 @@ import DIDVideoStream from "@/app/DIDWebRTCVideoStream";
 export default function Page() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [inputValue, setInputValue] = useState("");
-
+  const [history, setHistory] = useState<{role: string, text: string}[]>([]);
+  
   const imageUrls: PartImageUrls = JSON.parse(window.localStorage.getItem(IMAGE_URLS_KEY) ?? "{}");
   const parts = [
     {
@@ -56,6 +57,27 @@ export default function Page() {
                 onSubmit={(e) => {
                   e.preventDefault();
                   setIsSubmitting(true);
+                  fetch('http://localhost:5000/get_response', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                      prev_part: 'none', // replace with the previous part
+                      user_message: inputValue, // replace with the user's message
+                      history: history
+                    })
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                    const { responder, text, role } = data;
+                    setHistory(prevHistory => [...prevHistory, {"role": role, "text": responder + ": " + text}]);
+                    console.log(data);
+                  })
+                  .catch((error) => {
+                    console.error('Error:', error);
+                  });
+
                   setInputValue("");
 
                   // TODO: Actually call the prompt(s)
