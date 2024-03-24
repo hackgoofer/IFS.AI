@@ -25,19 +25,24 @@ async function makePartImages(inputUrl: string): Promise<PartImageUrls> {
     await Promise.all(
       Object.entries(prompts).map(async ([part, prompt]) => [
         part,
-        await replicate.run("tencentarc/photomaker:ddfc2b08d209f9fa8c1eca692712918bd449f695dabb4a958da31802a9570fe4", {
-          input: {
-            prompt: prompt,
-            num_steps: 40,
-            style_name: "Photographic (Default)",
-            input_image: inputUrl,
-            num_outputs: 1,
-            guidance_scale: 5,
-            negative_prompt:
-              "nsfw, lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry",
-            style_strength_ratio: 20,
-          },
-        }),
+        (
+          await replicate.run(
+            "tencentarc/photomaker:ddfc2b08d209f9fa8c1eca692712918bd449f695dabb4a958da31802a9570fe4",
+            {
+              input: {
+                prompt: prompt,
+                num_steps: 40,
+                style_name: "Photographic (Default)",
+                input_image: inputUrl,
+                num_outputs: 1,
+                guidance_scale: 5,
+                negative_prompt:
+                  "nsfw, lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry",
+                style_strength_ratio: 20,
+              },
+            },
+          )
+        )[0],
       ]),
     ),
   );
