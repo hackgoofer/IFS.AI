@@ -48,8 +48,10 @@ def get_talk(talk_id):
 
 @app.route('/create_talk', methods=['POST'])
 def create_talk():
-
     url = "https://api.d-id.com/talks"
+
+    # parse body as json:
+    request_payload = request.get_json()
 
     payload = {
         "script": {
@@ -59,13 +61,13 @@ def create_talk():
                 "type": "microsoft",
                 "voice_id": "en-US-JennyNeural"
             },
-            "input": request.form['text']
+            "input": request_payload.get('text'),
         },
         "config": {
             "fluent": "false",
             "pad_audio": "0.0"
         },
-        "source_url": request.form['image_url']
+        "source_url": request_payload.get('image_url'),
     }
     headers = {
         "accept": "application/json",
