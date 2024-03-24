@@ -1,19 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { initializeStreamingClient } from "./streaming-client-api";
 
-export default function DIDVideoStream({ avatarUrl } : { avatarUrl: string }) {
+export default function DIDVideoStream({ avatarUrl }: { avatarUrl: string }) {
   const videoElementRef = useRef(null);
-  const [iceGatheringStatusLabel, setIceGatheringStatusLabel] = useState('');
-  const [iceStatusLabel, setIceStatusLabel] = useState('');
-  const [peerStatusLabel, setPeerStatusLabel] = useState('');
-  const [signalingStatusLabel, setSignalingStatusLabel] = useState('');
-  const [streamingStatusLabel, setStreamingStatusLabel] = useState('');
+  const [iceGatheringStatusLabel, setIceGatheringStatusLabel] = useState("");
+  const [iceStatusLabel, setIceStatusLabel] = useState("");
+  const [peerStatusLabel, setPeerStatusLabel] = useState("");
+  const [signalingStatusLabel, setSignalingStatusLabel] = useState("");
+  const [streamingStatusLabel, setStreamingStatusLabel] = useState("");
   const [streamingClient, setStreamingClient] = useState(null);
 
+  const [utterance, setUtterance] = useState("This is an arbitrary utterance");
+
   useEffect(() => {
-    console.log('DIDVideoStream mounted', videoElementRef);
+    console.log("DIDVideoStream mounted", videoElementRef);
     if (!videoElementRef) {
-      return
+      return;
     }
     const client = initializeStreamingClient({
       avatarUrl,
@@ -31,12 +33,7 @@ export default function DIDVideoStream({ avatarUrl } : { avatarUrl: string }) {
     <div>
       <div id="video-wrapper">
         <div>
-          <video
-            width="400"
-            height="400"
-            autoPlay
-            ref={videoElementRef}
-          ></video>
+          <video width="400" height="400" autoPlay ref={videoElementRef}></video>
         </div>
       </div>
       <br />
@@ -44,8 +41,8 @@ export default function DIDVideoStream({ avatarUrl } : { avatarUrl: string }) {
         <button onClick={streamingClient?.connect} type="button">
           Connect
         </button>
-        <button onClick={streamingClient?.start} type="button">
-          Start
+        <button onClick={() => streamingClient?.say(utterance)} type="button">
+          Say next thing
         </button>
         <button onClick={streamingClient?.destroy} type="button">
           Destroy

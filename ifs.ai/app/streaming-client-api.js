@@ -1,8 +1,8 @@
-'use strict';
-import DID_API from './api.json' assert { type: 'json' };
-if (DID_API.key == '🤫') alert('Please put your api key inside ./api.json and restart..');
+"use strict";
+import DID_API from "./api.json" assert { type: "json" };
+if (DID_API.key == "🤫") alert("Please put your api key inside ./api.json and restart..");
 
-import { fetchWithRetries } from './fetchUtil';
+import { fetchWithRetries } from "./fetchUtil";
 
 export function initializeStreamingClient({
   avatarUrl,
@@ -26,14 +26,14 @@ export function initializeStreamingClient({
   }
 
   function onIceCandidate(event) {
-    console.log('onIceCandidate', event);
+    console.log("onIceCandidate", event);
     if (event.candidate) {
       const { candidate, sdpMid, sdpMLineIndex } = event.candidate;
       fetch(`${DID_API.url}/${DID_API.service}/streams/${streamId}/ice`, {
-        method: 'POST',
+        method: "POST",
         headers: {
           Authorization: `Basic ${DID_API.key}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           candidate,
@@ -47,7 +47,7 @@ export function initializeStreamingClient({
 
   function onIceConnectionStateChange() {
     setIceStatusLabel(peerConnection.iceConnectionState);
-    if (peerConnection.iceConnectionState === 'failed' || peerConnection.iceConnectionState === 'closed') {
+    if (peerConnection.iceConnectionState === "failed" || peerConnection.iceConnectionState === "closed") {
       stopAllStreams();
       closePC();
     }
@@ -65,11 +65,11 @@ export function initializeStreamingClient({
   function onVideoStatusChange(videoIsPlaying, stream) {
     let status;
     if (videoIsPlaying) {
-      status = 'streaming';
+      status = "streaming";
       const remoteStream = stream;
       setVideoElement(remoteStream);
     } else {
-      status = 'empty';
+      status = "empty";
       playIdleVideo();
     }
     setStreamingStatusLabel(status);
@@ -89,7 +89,7 @@ export function initializeStreamingClient({
     statsIntervalId = setInterval(async () => {
       const stats = await peerConnection.getStats(event.track);
       stats.forEach((report) => {
-        if (report.type === 'inbound-rtp' && report.mediaType === 'video') {
+        if (report.type === "inbound-rtp" && report.mediaType === "video") {
           const videoStatusChanged = videoIsPlaying !== report.bytesReceived > lastBytesReceived;
           if (videoStatusChanged) {
             videoIsPlaying = report.bytesReceived > lastBytesReceived;
@@ -104,19 +104,19 @@ export function initializeStreamingClient({
   async function createPeerConnection(offer, iceServers) {
     if (!peerConnection) {
       peerConnection = new RTCPeerConnection({ iceServers });
-      peerConnection.addEventListener('icegatheringstatechange', onIceGatheringStateChange, true);
-      peerConnection.addEventListener('icecandidate', onIceCandidate, true);
-      peerConnection.addEventListener('iceconnectionstatechange', onIceConnectionStateChange, true);
-      peerConnection.addEventListener('connectionstatechange', onConnectionStateChange, true);
-      peerConnection.addEventListener('signalingstatechange', onSignalingStateChange, true);
-      peerConnection.addEventListener('track', onTrack, true);
+      peerConnection.addEventListener("icegatheringstatechange", onIceGatheringStateChange, true);
+      peerConnection.addEventListener("icecandidate", onIceCandidate, true);
+      peerConnection.addEventListener("iceconnectionstatechange", onIceConnectionStateChange, true);
+      peerConnection.addEventListener("connectionstatechange", onConnectionStateChange, true);
+      peerConnection.addEventListener("signalingstatechange", onSignalingStateChange, true);
+      peerConnection.addEventListener("track", onTrack, true);
     }
     await peerConnection.setRemoteDescription(offer);
-    console.log('set remote sdp OK');
+    console.log("set remote sdp OK");
     const sessionClientAnswer = await peerConnection.createAnswer();
-    console.log('create local sdp OK');
+    console.log("create local sdp OK");
     await peerConnection.setLocalDescription(sessionClientAnswer);
-    console.log('set local sdp OK');
+    console.log("set local sdp OK");
     return sessionClientAnswer;
   }
 
@@ -135,16 +135,16 @@ export function initializeStreamingClient({
   }
 
   function playIdleVideo() {
-    console.log('playing idle video');
+    console.log("playing idle video");
     if (!videoElementRef) return;
     videoElementRef.current.srcObject = undefined;
-    videoElementRef.current.src = 'or_idle.mp4';
+    videoElementRef.current.src = "or_idle.mp4";
     videoElementRef.current.loop = true;
   }
 
   function stopAllStreams() {
     if (videoElementRef && videoElementRef.current.srcObject) {
-      console.log('stopping video streams');
+      console.log("stopping video streams");
       videoElementRef.current.srcObject.getTracks().forEach((track) => track.stop());
       videoElementRef.current.srcObject = null;
     }
@@ -152,20 +152,20 @@ export function initializeStreamingClient({
 
   function closePC(pc = peerConnection) {
     if (!pc) return;
-    console.log('stopping peer connection');
+    console.log("stopping peer connection");
     pc.close();
-    pc.removeEventListener('icegatheringstatechange', onIceGatheringStateChange, true);
-    pc.removeEventListener('icecandidate', onIceCandidate, true);
-    pc.removeEventListener('iceconnectionstatechange', onIceConnectionStateChange, true);
-    pc.removeEventListener('connectionstatechange', onConnectionStateChange, true);
-    pc.removeEventListener('signalingstatechange', onSignalingStateChange, true);
-    pc.removeEventListener('track', onTrack, true);
+    pc.removeEventListener("icegatheringstatechange", onIceGatheringStateChange, true);
+    pc.removeEventListener("icecandidate", onIceCandidate, true);
+    pc.removeEventListener("iceconnectionstatechange", onIceConnectionStateChange, true);
+    pc.removeEventListener("connectionstatechange", onConnectionStateChange, true);
+    pc.removeEventListener("signalingstatechange", onSignalingStateChange, true);
+    pc.removeEventListener("track", onTrack, true);
     clearInterval(statsIntervalId);
-    setIceGatheringStatusLabel('');
-    setSignalingStatusLabel('');
-    setIceStatusLabel('');
-    setPeerStatusLabel('');
-    console.log('stopped peer connection');
+    setIceGatheringStatusLabel("");
+    setSignalingStatusLabel("");
+    setIceStatusLabel("");
+    setPeerStatusLabel("");
+    console.log("stopped peer connection");
     if (pc === peerConnection) {
       peerConnection = null;
     }
@@ -173,38 +173,43 @@ export function initializeStreamingClient({
 
   return {
     connect: async () => {
-      if (peerConnection && peerConnection.connectionState === 'connected') {
+      if (peerConnection && peerConnection.connectionState === "connected") {
         return;
       }
       stopAllStreams();
       closePC();
       console.log("connecting to streaming service", avatarUrl);
       const sessionResponse = await fetchWithRetries(`${DID_API.url}/${DID_API.service}/streams`, {
-        method: 'POST',
+        method: "POST",
         headers: {
           Authorization: `Basic ${DID_API.key}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           source_url: avatarUrl,
         }),
       });
-      const { id: newStreamId, offer, ice_servers: iceServers, session_id: newSessionId } = await sessionResponse.json();
+      const {
+        id: newStreamId,
+        offer,
+        ice_servers: iceServers,
+        session_id: newSessionId,
+      } = await sessionResponse.json();
       streamId = newStreamId;
       sessionId = newSessionId;
       try {
         sessionClientAnswer = await createPeerConnection(offer, iceServers);
       } catch (e) {
-        console.log('error during streaming setup', e);
+        console.log("error during streaming setup", e);
         stopAllStreams();
         closePC();
         return;
       }
       const sdpResponse = await fetch(`${DID_API.url}/${DID_API.service}/streams/${streamId}/sdp`, {
-        method: 'POST',
+        method: "POST",
         headers: {
           Authorization: `Basic ${DID_API.key}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           answer: sessionClientAnswer,
@@ -212,19 +217,19 @@ export function initializeStreamingClient({
         }),
       });
     },
-    start: async () => {
+    say: async (input) => {
       // connectionState not supported in firefox
-      if (peerConnection?.signalingState === 'stable' || peerConnection?.iceConnectionState === 'connected') {
+      if (peerConnection?.signalingState === "stable" || peerConnection?.iceConnectionState === "connected") {
         const playResponse = await fetchWithRetries(`${DID_API.url}/${DID_API.service}/streams/${streamId}`, {
-          method: 'POST',
+          method: "POST",
           headers: {
             Authorization: `Basic ${DID_API.key}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             script: {
-              type: 'text',
-              input: 'this is an arbitrary sentence we have supplied for the purpose of this demo',
+              type: "text",
+              input: input,
             },
             config: {
               stitch: true,
@@ -236,10 +241,10 @@ export function initializeStreamingClient({
     },
     destroy: async () => {
       await fetch(`${DID_API.url}/${DID_API.service}/streams/${streamId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
           Authorization: `Basic ${DID_API.key}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ session_id: sessionId }),
       });
