@@ -11,8 +11,8 @@ export default function DIDVideoStream({ avatarUrl } : { avatarUrl: string }) {
   const [streamingClient, setStreamingClient] = useState(null);
 
   useEffect(() => {
-    console.log('DIDVideoStream mounted', videoElement);
-    if (!videoElement) {
+    console.log('DIDVideoStream mounted', videoElementRef);
+    if (!videoElementRef) {
       return
     }
     const client = initializeStreamingClient({
