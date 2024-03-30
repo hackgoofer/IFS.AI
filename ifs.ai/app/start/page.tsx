@@ -8,6 +8,8 @@ import { generateReactHelpers } from "@uploadthing/react";
 import { OurFileRouter } from "@/app/api/uploadthing/core";
 import { getImageUrlsKeyForId, getRantKeyForId, PartImageUrls } from "@/app/constants";
 import SpeechToText from "@/components/ui/speech-to-text";
+import { useRouter } from 'next/navigation'
+
 
 const { useUploadThing, uploadFiles } = generateReactHelpers<OurFileRouter>();
 
@@ -30,20 +32,21 @@ export default function Page() {
   const [rant, setRant] = useState("");
   const [imagesCaptured, setImagesCaptured] = useState(false);
   const [imageUrls, setImageUrls] = useState<PartImageUrls | {}>({});
+  const router = useRouter()
 
   const id = useMemo(() => {
     let i = 0;
     while (window.localStorage.getItem(getImageUrlsKeyForId(i))) {
       i++;
     }
-    console.log("ID is", i);
+    console.log("ID is ", i);
     return i;
   }, []);
 
   useEffect(() => {
-    if (rantProcessed && imageUrls.firefighter) {
+    if (rantProcessed && imageUrls.firefighter && id !== undefined) {
       console.log("Rant process and images generated", imageUrls);
-      window.location.href = `/chat?id=${id}`;
+      router.push(`/chat?id=${id}`)
     }
   }, [rantProcessed, imageUrls, id]);
 
