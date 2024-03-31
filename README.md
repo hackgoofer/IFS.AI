@@ -13,7 +13,6 @@ IFS is a transformative tool that conceives of every human being as a system of 
   <source src="https://youtu.be/DdZZ7sTX840" type="video/mp4">
 </video>
 
-
 ## ✨ Demo
 For the best demo experience, we will be launching a hosted version SOON. Stay Tuned.
 
