@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/hackgoofer/AgentGPT/main/next/public/social.png" height="300" alt="IFS.AI Logo"/>
+  <img src="https://raw.githubusercontent.com/hackgoofer/IFS.AI/main/ifs.ai/public/social.png" height="300" alt="IFS.AI Logo"/>
 </p>
 
 <p align="center">
@@ -9,7 +9,7 @@
 ## ✨ Demo
 For the best demo experience, we will be launching a hosted version SOON. Stay Tuned.
 
-## 👨‍🚀 Getting Started
+## Getting Started :rocket:
 
 ### Frontend:
 - Go to ifs.ai
@@ -24,11 +24,8 @@ For the best demo experience, we will be launching a hosted version SOON. Stay T
 - Backend Required Services are: De-ID, Mistral, OpenAI
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/hackgoofer/AgentGPT/main/next/public/howto.png" height="300" alt="IFS.AI Logo"/>
+  <img src="https://raw.githubusercontent.com/hackgoofer/IFS.AI/main/ifs.ai/public/howto.png" height="300" alt="IFS.AI Logo"/>
 </p>
 
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/hackgoofer/AgentGPT/main/next/public/social.png" height="300" alt="IFS.AI Logo"/>
-</p>
 
