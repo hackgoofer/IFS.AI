@@ -3,8 +3,16 @@
 </p>
 
 <p align="center">
-  <em> Converse with different parts of yourself with Internal Family Therapy </em>
+  <em> Embrace every part of you with through conversation. Inspired by Internal Family System Therapy </em>
 </p>
+
+## What is Internal Family System Therapy
+IFS is a transformative tool that conceives of every human being as a system of protective and wounded inner parts led by a core Self. We believe the mind is naturally multiple and that is a good thing. Just like members of a family, inner parts are forced from their valuable states into extreme roles within us. Self is in everyone. It can’t be damaged. It knows how to heal. 
+
+<video width="320" height="240" controls>
+  <source src="https://youtu.be/DdZZ7sTX840" type="video/mp4">
+</video>
+
 
 ## ✨ Demo
 For the best demo experience, we will be launching a hosted version SOON. Stay Tuned.
