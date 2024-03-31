@@ -13,19 +13,17 @@ More Resources about IFS:
 - [Podcast](https://mormondiscussionpodcast.org/2023/06/internal-family-systems-therapy-talking-to-your-parts-almost-awakened-156/)
 - [Video](https://youtu.be/DdZZ7sTX840)
 
-## ✨ Demo
-For the best demo experience, we will be launching a hosted version SOON. Stay Tuned.
 
 ## Getting Started :rocket:
 
 ### Frontend:
-- Go to ifs.ai
+- Go inside ifs.ai folder
 - Copy .env.example to .env
 - Fill in .env
 - Required Services are: replicate, uploadthing
 
 ### Backend:
-- Go to ifs.py
+- Go inside ifs.py folder
 - install relevant requirements, see backend README
 - Copy .env.example to .env
 - Backend Required Services are: De-ID, Mistral, OpenAI
@@ -34,5 +32,6 @@ For the best demo experience, we will be launching a hosted version SOON. Stay T
   <img src="https://raw.githubusercontent.com/hackgoofer/IFS.AI/ef29cbb223b86d12d2d497057601a00f92a7cfb0/ifs.ai/public/social.png?token=GHSAT0AAAAAACFT7GCPZQCBJJOQMNYU66IOZQI4DBA" height="300" alt="IFS.AI Logo"/>
 </p>
 
-
+## ✨ Demo
+For the best demo experience, we will be launching a hosted version SOON. Stay Tuned.
 
