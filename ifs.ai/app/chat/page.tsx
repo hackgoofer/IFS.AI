@@ -214,7 +214,7 @@ export default function Page({ searchParams }: { searchParams: { id: number } })
             if (role === "user") {
               bgColor = "white";
             } else if (responder.toLowerCase() === "exile") {
-              bgColor = "#FFFFE0";
+              bgColor = "#ccccb3";
             } else if (responder.toLowerCase() == "firefighter") {
               bgColor = "#FFC0CB";
             } else if (responder.toLowerCase() == "manager") {
