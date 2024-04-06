@@ -4,8 +4,6 @@ from markupsafe import escape
 import requests, json, jsonify, time
 import os
 from dotenv import load_dotenv
-from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage
 from openai import OpenAI
 from pydantic import BaseModel, Field, validator
 from parts import IFSParts
@@ -21,8 +19,7 @@ instructor_client = instructor.patch(
         api_key=os.getenv("OPENAI_API_KEY"),
     )
 )
-mistral_model = "mistral-large-latest"
-mistral_client = MistralClient(api_key=os.getenv("MISTRAL_API_KEY"))
+
 # flask cors:
 from flask_cors import CORS
 
@@ -114,31 +111,43 @@ def get_response():
         max_tokens=300,
     )
     reply = response.choices[0].message.content
-    responder = None
-    if "firefighter" in reply:
-        responder = "firefighter"
+    responder = get_responder_from_text(reply)
+    if responder == "firefighter":
         system = firefighter_system
-    elif "manager" in reply:
-        responder = "manager"
+    elif responder == "manager":
         system = manager_system
-    elif "exile" in reply:
-        responder = "exile"
+    elif responder == "exile":
         system = exile_system        
 
     system += f" Reply with less than 2 sentences in first person as a {responder}"
     messages = [
-        ChatMessage(role="system", content=system),
+        {'role': "system", 'content': system, 'name': responder},
     ]
     for message in history:
         role = message.get('role')
         text = message.get('text')
-        messages.append(ChatMessage(role=role, content=text))
+        responder = get_responder_from_text(text)
+        a_message = {'role': role, 'content': text}
+        if role != "user":
+            a_message['name'] = responder
+        messages.append(a_message)
     
-    chat_response = mistral_client.chat(
-        model=mistral_model,
+    chat_response = openai_client.chat.completions.create(
+        model="gpt-4",
         messages=messages,
     )
     return {"role": "assistant", "text": chat_response.choices[0].message.content, "responder": responder}
+
+def get_responder_from_text(text):
+    if "firefighter" in text:
+        return "firefighter"
+    elif "manager" in text:
+        return "manager"
+    elif "exile" in text:
+        return "exile"
+    
+    print(f"Unknown: {text}")
+    return 'unknown'
 
 def talk_ready(talk_id):
     url = "https://api.d-id.com/talks/" + talk_id
