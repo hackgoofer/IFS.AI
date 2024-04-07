@@ -6,23 +6,13 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel, Field, validator
-from parts import IFSParts
+from parts import IFSParts, UserProfile
 import instructor
-
-load_dotenv()
-
-groq = os.getenv("GROQ_ENV")
-openai_client = OpenAI()
-instructor_client = instructor.patch(
-    OpenAI(
-        # This is the default and can be omitted
-        api_key=os.getenv("OPENAI_API_KEY"),
-    )
-)
-
-# flask cors:
+from langmem import AsyncClient, Client
+import asyncio
 from flask_cors import CORS
 
+load_dotenv()
 # Create the Flask app
 app = Flask(__name__)
 
@@ -34,6 +24,22 @@ if D_ID_API_KEY is None:
     raise Exception("D_ID_API_KEY not found in environment")
 auth = "Basic " + D_ID_API_KEY
 
+
+groq = os.getenv("GROQ_ENV")
+openai_client = OpenAI()
+instructor_client = instructor.patch(
+    OpenAI(
+        # This is the default and can be omitted
+        api_key=os.getenv("OPENAI_API_KEY"),
+    )
+)
+langmem_client = AsyncClient()
+
+async def init():
+    _ = await langmem_client.create_memory_function(
+        UserProfile, target_type="user_state"
+    )
+asyncio.run(init())
 
 # To test this:
 # curl -X POST http://127.0.0.1:5000/get_system_prompts -H "Content-Type: application/json" -d '{"user_message": "I have a feeling of inadequacy. Are we building the right thing? Are we going to be billionaires in the next 12 months, is this what I want? Is this what makes me happy? Will I find love, why?"}'
@@ -111,7 +117,8 @@ def get_response():
         max_tokens=300,
     )
     reply = response.choices[0].message.content
-    responder = get_responder_from_text(reply)
+    print(f"chatgpt decided to use the responder: {reply}")
+    responder = reply
     if responder == "firefighter":
         system = firefighter_system
     elif responder == "manager":
@@ -121,15 +128,17 @@ def get_response():
 
     system += f" Reply with less than 2 sentences in first person as a {responder}"
     messages = [
-        {'role': "system", 'content': system, 'name': responder},
+        {'role': "system", 'content': system},
     ]
-    for message in history:
+    for idx, message in enumerate(history):
         role = message.get('role')
         text = message.get('text')
-        responder = get_responder_from_text(text)
+
+        print(idx)
+        print(message)
         a_message = {'role': role, 'content': text}
-        if role != "user":
-            a_message['name'] = responder
+        if role == "assistant":
+            a_message['name'] = message.get("responder")
         messages.append(a_message)
     
     chat_response = openai_client.chat.completions.create(
@@ -182,7 +191,6 @@ def get_talk(talk_id):
 
 @app.route('/create_talk', methods=['POST'])
 def create_talk():
-
     url = "https://api.d-id.com/talks"
 
     # parse body as json:
@@ -197,7 +205,7 @@ def create_talk():
             "subtitles": "false",
             "provider": {
                 "type": "microsoft",
-                "voice_id": "en-GB-RyanNeural"
+                "voice_id": "en-US-JennyNeural"
             },
             "input": text,
         },
