@@ -99,6 +99,7 @@ export default function Page({ searchParams }: { searchParams: { id: number } })
   });
 
   const createVideo = async (imageUrl: string, text: string) => {
+    return
     const response = await fetch("http://127.0.0.1:5000/create_talk", {
       method: "POST",
       headers: {
@@ -127,7 +128,7 @@ export default function Page({ searchParams }: { searchParams: { id: number } })
               {parts.map(({ name, prettyName, imageUrl, personality, unmetNeeds }) => (
                 <div key={name} className="flex-1 overflow-hidden rounded-lg border-2 border-stone-100">
                   <video className="rounded-lg" src={videoUrls[name.toLowerCase()]} poster={imageUrl} autoPlay={true} />
-                  <div className="px-2">
+                  <div className="px-2 h-[45vh] overflow-auto">
                     <p className="my-2 text-center text-lg font-semibold">{prettyName}</p>
                     <p className="my-2 text-sm italic text-stone-400">
                       {systemPrompts[name.toLowerCase()]?.personality}
